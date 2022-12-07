@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019
+ *  Copyright (c) Texas Instruments Incorporated 2017-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -28,51 +28,25 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-//:TODO: Need to figure out def group and requirement Id here
-
-/**
- *  \file dmautils.h
  *
- *  \brief DMA Utils API/interface file.
- *
- *  Requirement: DOX_REQ_TAG(PDK-2494)
  */
+/** ============================================================================
+ *   @file  csl_dru.h
+ *
+ *   @path  $(CSLPATH)
+ *
+ *   @desc  This file contains the CSL API's for DRU
+ *  ============================================================================
+ */
+#ifndef CSL_DRU_TOP_H_
+#define CSL_DRU_TOP_H_
 
-#ifndef DMAUTILS_H_
-#define DMAUTILS_H_
+#include <drivers/hw_include/csl.h>
+#include <drivers/hw_include/tistdtypes.h>
+#include <drivers/dmautils/csl/cslr_dru.h>
 
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdint.h>
-#if !defined (MCU_PLUS_SDK)
-#include "ti/csl/cslr.h"
-#include "ti/csl/src/ip/udmap/V0/csl_udmap_tr.h"
-#include <ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h>
-#else
-#include <drivers/hw_include/cslr.h>
-#include <drivers/dmautils/csl/udmap/v0/csl_udmap_tr.h>
-#include <drivers/dmautils/include/dmautils_autoincrement_3d.h>
-#endif
-#ifdef __cplusplus
-extern "C" {
+#if defined (SOC_AM62AX)
+#include <drivers/dmautils/csl/dru/v0/csl_dru.h>
 #endif
 
-
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* #ifndef DMAUTILS_H_ */
-
-/* @} */

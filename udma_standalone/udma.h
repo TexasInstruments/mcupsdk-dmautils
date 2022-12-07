@@ -62,12 +62,20 @@
 
 #include <stdint.h>
 
+#if !defined (MCU_PLUS_SDK)
 #include <ti/csl/csl_dru.h>
 
 #include <ti/drv/udma/dmautils/udma_standalone/include/udma_types.h>
 #include <ti/drv/udma/dmautils/udma_standalone/include/udma_ch.h>
 #include <ti/drv/udma/dmautils/udma_standalone/include/udma_event.h>
+#else
+#include <drivers/dmautils/csl/csl_dru.h>
 
+#include <drivers/dmautils/udma_standalone/include/udma_types.h>
+#include <drivers/dmautils/udma_standalone/include/udma_ch.h>
+#include <drivers/dmautils/udma_standalone/include/udma_event.h>
+
+#endif
 
 
 #ifdef __cplusplus

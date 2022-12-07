@@ -50,13 +50,20 @@
 #define UDMA_RM_MAX_BLK_COPY_CH             (32U)
 
 #if defined (DMA_UTILS_STANDALONE)
+#if !defined (MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/udma_standalone/udma.h"
+#else
+#include "drivers/dmautils/udma_standalone/udma.h"
+#endif
 #else
 #include "ti/drv/udma/udma.h"
 #endif
 
+#if !defined (MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
-
+#else
+#include "drivers/dmautils/include/dmautils_autoincrement_3d.h"
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif

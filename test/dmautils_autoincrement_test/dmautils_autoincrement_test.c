@@ -50,13 +50,20 @@
 #if defined(HOST_EMULATION)
 #include <malloc.h>
 #else
+#if !defined (MCU_PLUS_SDK)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/c7x/cslr_C7X_CPU.h>
+#else
+#include <drivers/hw_include/csl_clec.h>
+#endif
 #endif
 
 #include "dmautils_autoincrement_example.h"
+#if !defined (MCU_PLUS_SDK)
 #include "ti/drv/sciclient/sciclient.h"
-
+#else
+#include <drivers/sciclient.h>
+#endif
 #define TEST_malloc(heap, size)   malloc(size)
 #define TEST_free(ptr)            free(ptr)
 
@@ -93,7 +100,7 @@ dmautilsAutoIncTest_config gTestConfig[] =
         8,/*Image blockWidth */
         8/*Image blockHeight */
     },
-    #if !defined(SOC_AM62A)   
+    #if !defined(SOC_AM62A)
     {
           1,
           1,
@@ -119,7 +126,7 @@ dmautilsAutoIncTest_config gTestConfig[] =
           16,/*Image blockWidth */
           8/*Image blockHeight */
      }
-    #endif    
+    #endif
 };
 
 
@@ -200,7 +207,7 @@ static void appC7xClecInitDru(void)
     dru_input_start = DRU_LOCAL_EVENT_START_DEFAULT;
     #endif
     uint32_t dru_input_num   = 16;
-    
+
     /*Only configuring 16 channels*/
     for(i=dru_input_start; i<(dru_input_start+dru_input_num); i++)
     {
@@ -263,7 +270,7 @@ int32_t main()
       goto Exit;
     }
 
-    test_sciclientDmscGetVersion(NULL, 0 ); 
+    test_sciclientDmscGetVersion(NULL, 0 );
     appC7xClecInitDru();
 #endif
 
@@ -286,7 +293,7 @@ int32_t main()
       input = (uint8_t *)malloc(width * height);
       output = (uint8_t *)malloc(width * height);
       refOut = (uint8_t *)malloc(width * height);
-      
+
       pInputBlock = (uint8_t *)malloc(blockWidth * blockHeight * 2);
       pOutputBlock = (uint8_t *)malloc(blockWidth * blockHeight * 2);
 

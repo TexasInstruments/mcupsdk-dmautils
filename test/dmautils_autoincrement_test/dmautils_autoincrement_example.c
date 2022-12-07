@@ -48,11 +48,19 @@ operate a function on internal memory and transfer back the result.
 #include "dmautils_autoincrement_example.h"
 
 #if defined (DMA_UTILS_STANDALONE)
+#if !defined(MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/udma_standalone/udma.h"
+#else
+#include <drivers/dmautils/udma_standalone/udma.h>
+#endif
 #else
 #include "ti/drv/udma/udma.h"
 #endif
+#if !defined(MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/dmautils.h"
+#else
+#include <drivers/dmautils/dmautils.h>
+#endif
 
 
 

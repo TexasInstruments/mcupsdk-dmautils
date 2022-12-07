@@ -57,8 +57,13 @@
 #include <math.h>
 #include <stdint.h>
 
+#if !defined(MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
+#else
+#include "drivers/dmautils/src/dmautils_autoincrement_3d_priv.h"
+#include "drivers/dmautils/include/dmautils_autoincrement_3d.h"
+#endif
 
 #if defined (BUILD_C7X)
 #include <c7x.h>
@@ -277,7 +282,7 @@ static uint32_t DmaUtilsAutoInc3d_SetupCmpSecTr(DmaUtilsAutoInc3d_TransferProp *
       secondaryTR->addr = (uint64_t)transferProp->ioPointers.srcPtr;
       secondaryTR->data[4] = (uint64_t)transferProp->ioPointers.cdbPtr - (uint64_t)transferProp->ioPointers.strPtr; /*offset to CDB table*/
     }
-    
+
     uint32_t sectrFlags  = 1U; /*TODO CSL doesn't exist yet for compression secTR type*/
 
     secondaryTR->flags   = (sectrFlags & 0xF) | (transferProp->cmpProp.sbDim1 & 0xFFFFFFF0);
@@ -285,7 +290,7 @@ static uint32_t DmaUtilsAutoInc3d_SetupCmpSecTr(DmaUtilsAutoInc3d_TransferProp *
                          | ( (transferProp->cmpProp.sbIcnt1 & 0xFFFF) << 16 );
     secondaryTR->data[2] = transferProp->cmpProp.sDim0;
     secondaryTR->data[3] = transferProp->cmpProp.dDim0;
-    if ( transferProp->cmpProp.cmpAlg == 3 ) /*TODO CSL doesn't exist yet for variable K SEG type */  
+    if ( transferProp->cmpProp.cmpAlg == 3 ) /*TODO CSL doesn't exist yet for variable K SEG type */
     { /*Image/video compression flags setup*/
       cmpFlags    = ( (transferProp->cmpProp.cmpAlg       & 0xF )       )
                   | ( (transferProp->cmpProp.varKStartK   & 0x7 ) << 8  )
@@ -303,10 +308,10 @@ static uint32_t DmaUtilsAutoInc3d_SetupCmpSecTr(DmaUtilsAutoInc3d_TransferProp *
                   | ( (transferProp->cmpProp.sbAM0   & 0x3 ) << 4 )
                   | ( (transferProp->cmpProp.sbAM1   & 0x3 ) << 6 )
                   | ( (transferProp->cmpProp.cmpBias & 0xFF) << 8 );
-    
+
     }
     secondaryTR->data[0] = cmpFlags;
- 
+
   return DMAUTILS_SOK;
 }
 
@@ -741,7 +746,7 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
     DmaUtilsAutoInc3d_ChannelContext * channelContext;
     uint32_t isRingBasedFlowReq =0;
     Udma_ChHandle channelHandle;
-    
+
 
     uint32_t i;
 
@@ -760,7 +765,7 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
     }
 
 
-    dmautilsContext = (DmaUtilsAutoInc3d_Context *)autoIncrementContext;    
+    dmautilsContext = (DmaUtilsAutoInc3d_Context *)autoIncrementContext;
     channelContext = dmautilsContext->channelContext[channelId];
     channelHandle = &channelContext->chHandle;
 #ifdef HOST_EMULATION
@@ -814,7 +819,7 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
 
 #ifdef HOST_EMULATION
       CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trMem + sizeof(CSL_UdmapTR));
-      
+
       druChannelNum = (channelHandle->extChNum - channelHandle->utcInfo->startCh);
       hostEmulation_druChSubmitAtomicTr(udmaDrvHandle->utcInfo[UDMA_UTC_ID_MSMC_DRU0].druRegs,
                                                                         druChannelNum,

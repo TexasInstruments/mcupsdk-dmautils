@@ -76,7 +76,7 @@
 
 #include <stdint.h>
 #include <stdarg.h>
-#include <ti/csl/csl_types.h>
+#include <drivers/hw_include/csl_types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -392,15 +392,15 @@ typedef struct
   uint32_t    sbDim1;
   /** Jump in bytes when moving from sbIcnt1 to sicnt0 (completing a superblock) */
   uint32_t    sDim0;
-  
+
   //Changes for 1.0.6 start here:
   /** The destination dimension to use for DICNT0 in the original TR after each super block */
   uint32_t    dDim0;
   /** The addressing mode to use for the super block during ICNT0 is decrmenting */
   uint32_t    sbAM0;
   /** The addressing mode to use for the super block when SB_ICNT1 is decremented.*/
-  uint32_t    sbAM1; 
-  
+  uint32_t    sbAM1;
+
 }DmaUtilsAutoInc3d_TransferCompression;
 
 

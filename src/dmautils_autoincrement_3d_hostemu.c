@@ -58,9 +58,13 @@
 #include <stdint.h>
 #include "stdlib.h"
 
+#if !defined (MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
-
+#else
+#include "drivers/dmautils/src/dmautils_autoincrement_3d_priv.h"
+#include "drivers/dmautils/include/dmautils_autoincrement_3d.h"
+#endif
 #if defined(__C7100__) || defined(__C7120__) || defined(__C7504__)
 #include <c7x.h>
 #endif
@@ -135,7 +139,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
     temp &= (1 << (length)) - 1;
   }
 
-  
+
 
   switch( algorithm ) /*TODO CSL doesn't exist for compression fields...*/
   {
@@ -150,7 +154,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
             if ( num & ( 1 << i ) ) :
               compressed |= ( 1 << (8 - i) ) ;
       */
-      
+
       if ( temp != 0 )
       {
         compressed = 1;
@@ -180,7 +184,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
         #invert j
         inverted = 0 ;
         for k in range(0,9) :
-          if ( (j & (1<<k) ) ) : 
+          if ( (j & (1<<k) ) ) :
             z = k;
         for k in range(0,z+1) :
           if ( j & (1<<k) ) :
@@ -220,24 +224,24 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
           temp = num | ( 1 << elsize ) ;
         else :
           temp = num ;
-        
+
         #add in variable-k
         temp += (1 << my_k) - 1
-        
+
         #mask out top bit in case of rollover
         temp &= ( (1 << elsize+1) - 1 )
-        
+
         #alternate positive negative
         if ( temp < ( 1 << elsize ) ) :
           j = ( temp << 1 ) + 1 ;
         else :
           j = ( ( 1<<(elsize+1) ) - temp ) << 1 ;
-        
+
         #invert j
         inverted =  0 ;
         z        = -1 ;
         for k in range(0,elsize+1) :
-          if ( (j & (1<<k) ) ) : 
+          if ( (j & (1<<k) ) ) :
             z = k;
         for k in range(0,z+1) :
           if ( j & (1<<k) ) :
@@ -300,8 +304,8 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
  symbolOut   : uncompressed symbol
  return      : length of compressed symbol
 */
-static uint8_t DmaUtilsAutoInc3d_decompressElem ( CSL_UdmapSecTR * secondaryTR, 
-                                                       uint64_t           symbolIn, 
+static uint8_t DmaUtilsAutoInc3d_decompressElem ( CSL_UdmapSecTR * secondaryTR,
+                                                       uint64_t           symbolIn,
                                                        uint32_t*          symbolOut)
 {
   uint64_t elem         = symbolIn;
@@ -395,13 +399,13 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem ( CSL_UdmapSecTR * secondaryTR,
           uncompressed = ( uncompressed - 1 ) >> 1 ;
         else :
           uncompressed = ( 1 << (elsize+1) ) - ( uncompressed >> 1 ) ;
-        
+
         #remove variable-k
         if ( uncompressed >= (1 << my_k) - 1 ) :
           uncompressed -= (1 << my_k) - 1
         else :
           uncompressed += (1 << elsize) - (1 << my_k) + 1
-        
+
         #mask out top bit if set
         uncompressed &= (1<<elsize)-1
       */
@@ -610,7 +614,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
       uint32_t AM0, AM1, AM2, AM3, sbAM0, sbAM1;
       uint64_t srcAM0, srcAM1, srcAM2, srcAM3;
       uint64_t dstAM0, dstAM1, dstAM2, dstAM3;
-      
+
       uint64_t sbSrcAM0, sbSrcAM1;
       uint64_t sbDstAM0, sbDstAM1;
 
@@ -634,7 +638,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
       CSL_UdmapTR * nextTransferRecord  = (CSL_UdmapTR *)(void *) &trArr[1];
       CSL_UdmapTR * nextTransferRecord1 = (CSL_UdmapTR *)(void *) &trArr[2];
       CSL_UdmapTR * nextTransferRecord2 = (CSL_UdmapTR *)(void *) &trArr[3];
-      
+
 
       triggerType = CSL_FEXT(origTransferRecord->flags, UDMAP_TR_FLAGS_TRIGGER0_TYPE);
       AMODE = CSL_FEXT(origTransferRecord->fmtflags, UDMAP_TR_FMTFLAGS_AMODE);
@@ -668,14 +672,14 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
       /*Decoding secondary TR*/
       if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP ) /*TODO compression CSL definitions don't exist yet...*/
       {
-        sectrPtr   = (CSL_UdmapSecTR *)(origTransferRecord->daddr); 
+        sectrPtr   = (CSL_UdmapSecTR *)(origTransferRecord->daddr);
         sDim0      = (int32_t)(sectrPtr->data[2]);
         dDim0      = (int32_t)(sectrPtr->data[3]);
         sbDim1     = (int32_t)(sectrPtr->flags & 0xFFFFFFF0);
         cmprsType  = sectrPtr->data[0] & 0xF;
         sbAM0      = (sectrPtr->data[0] >> 4) & 0x3;
         sbAM1      = (sectrPtr->data[0] >> 6) & 0x3;
-        
+
         switch( cmprsType )
         {
           case DMAUTILSAUTOINC3D_CMPRS_ZERO :
@@ -750,11 +754,11 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
         {
           sbDstAM0 = (sbAM0 == 0 ) ? 0 : ( (sbAM0 == 1) ? circMask0 : circMask1  );/* Circular update */
           sbSrcAM0 = 0; /* Linear Update */
-  
+
           sbDstAM1 = (sbAM1 == 0 ) ? 0 : ( (sbAM1 == 1) ? circMask0 : circMask1  );/* Circular update */
           sbSrcAM1 = 0; /* Linear Update */
         }
-        else 
+        else
         {
           sbDstAM0 = 0;
           sbSrcAM0 = 0;
@@ -776,16 +780,16 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
         dstAM3 = 0;/* Linear Update */
         srcAM3 = (AM3 == 0 ) ? 0 : ( (AM3 == 1) ? circMask0 : circMask1  );
 
-        
+
         if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP) /* TODO decompression CSL definition doesn't exist yet...*/
         {
-          sbDstAM0 = 0; /* Linear Update */ 
+          sbDstAM0 = 0; /* Linear Update */
           sbSrcAM0 = (sbAM0 == 0 ) ? 0 : ( (sbAM0 == 1) ? circMask0 : circMask1  );/* Circular update */
-  
-          sbDstAM1 = 0; /* Linear Update */  
+
+          sbDstAM1 = 0; /* Linear Update */
           sbSrcAM1 = (sbAM1 == 0 ) ? 0 : ( (sbAM1 == 1) ? circMask0 : circMask1  );/* Circular update */
         }
-        else 
+        else
         {
           sbDstAM0 = 0;
           sbSrcAM0 = 0;
@@ -840,14 +844,14 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
 
       while (1)
       {
-        uint8_t* sbCdbPtr;  /*stores the pointer to cdb table entry corresponding to a SB being encoded or decoded.*/ 
+        uint8_t* sbCdbPtr;  /*stores the pointer to cdb table entry corresponding to a SB being encoded or decoded.*/
         uint8_t* sbAddr;    /*stores the pointer to to a uncomressed SB data being encoded or decoded. */
         if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP )    /*TODO decompression CSL definitions don't exist yet...*/
         {
           srcPtr = (uint8_t *)nextTransferRecord->addr;
           cdbPtr = (uint8_t *)nextTransferRecord->daddr;
           dstPtr = (uint8_t *)hostEmulation_addressUpdate(sectrPtr->addr , ((int32_t *)cdbPtr)[1], 0);
-          
+
           sbCdbPtr    = cdbPtr;
           sbAddr      = srcPtr;    /*Stores the base pointer for a SB row*/
         }
@@ -856,7 +860,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
           cdbPtr = (uint8_t *)  nextTransferRecord->addr;
           sbCdbPtr    = cdbPtr;
           dstPtr = (uint8_t *)  nextTransferRecord->daddr;
-          sbAddr = dstPtr; 
+          sbAddr = dstPtr;
         }
         else
         {
@@ -869,7 +873,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                dstPtr16 = (uint16_t *)dstPtr;
           #endif
         }
-        
+
         for (icnt0 = 0; icnt0 < nextTransferRecord->icnt0; icnt0++)
         {
           if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP )/* TODO compression CSL definition doesn't exist yet...*/
@@ -898,7 +902,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
               {
                 uint8_t newLen = DmaUtilsAutoInc3d_compressElem( sectrPtr , (uint32_t)(*srcPtr) , &cmprs );
                 /*merge compressed data into output*/
-                
+
                 if ( len + newLen > 128 ) /*This won't fit in the current CDB*/
                 {
                   if ( cmprsType == DMAUTILSAUTOINC3D_CMPRS_ZERO )
@@ -919,10 +923,10 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                   len = 0;
                   cdbCnt++;
                 }
-                
+
                 /*align compressed data starting bit with the output data*/
                 cmprs <<=  len & 0x7;
-                
+
                 /*deal with compressed data endianness agnostically*/
                 uint8_t touchedBytes = (newLen + (len & 0x7)) >> 3;
                 for ( i = 0; i <= touchedBytes; i++ )
@@ -934,7 +938,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                 len   += newLen;
                 srcPtr = (uint8_t*)hostEmulation_addressUpdate((uint64_t)srcPtr , 1 , sbSrcAM0);
               }
-              sb1Addr = (uint8_t*)hostEmulation_addressUpdate((uint64_t)sb1Addr , sbDim1 , sbSrcAM1);  
+              sb1Addr = (uint8_t*)hostEmulation_addressUpdate((uint64_t)sb1Addr , sbDim1 , sbSrcAM1);
             }
             /*
               finish last CDB in superblock
@@ -966,10 +970,10 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             uint8_t* sb1Addr       = sbAddr;
             int32_t srcJump       = 0;
             uint32_t curBitPosition = 0;
-            
+
             switch( cmprsType )
             {
-              case DMAUTILSAUTOINC3D_CMPRS_ZERO : 
+              case DMAUTILSAUTOINC3D_CMPRS_ZERO :
               {
                 maxSymbolSize = 16; /*actual = 9*/
                 break;
@@ -991,7 +995,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
 
             /*get start of superblock*/
             srcPtr = (uint8_t*)hostEmulation_addressUpdate(sectrPtr->addr, ((int32_t*)sbCdbPtr )[1], 0); /*srcAM0 ==> 0?*/
-            
+
             uint32_t  sbHeight = ((sectrPtr->data[1] >> 16) & 0xFFFF);
             uint32_t  sbWidth  = 16 * ((sectrPtr->data[1] & 0xFFFF));
             uint8_t   bias      =  ( (sectrPtr->data[0]) >> 8 ) & 0xFF;
@@ -1001,7 +1005,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
               dstPtr = sb1Addr;
               for (sbIcnt0 = 0; sbIcnt0 < sbWidth; )
               {
-                
+
                 if(cmprsType == DMAUTILSAUTOINC3D_CMPRS_ZERO)
                 {
                   /*CDB Decode, and dstPtr update happens within this function:*/
@@ -1019,7 +1023,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                 {
                   /*get at least one symbol of data in this CDB and be endianess agnostic*/
                   cmprs = 0;
-                  uint8_t len = (cdbLen > maxSymbolSize) ? maxSymbolSize  : cdbLen;		// COpy 
+                  uint8_t len = (cdbLen > maxSymbolSize) ? maxSymbolSize  : cdbLen;		// COpy
                   len         = ( len & 0x7 )            ? (len >> 3) + 1 : (len >> 3);
                   uint8_t off = (128 - cdbLen) >> 3;
 
@@ -1028,7 +1032,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                   {
                     cmprs |= *(srcPtr + off + i) << (i << 3);
                   }
-                  
+
                   /*align data*/
                   if (cdbLen & 0x7)
                   {
@@ -1074,7 +1078,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                 }
 
               }
-              
+
               sb1Addr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)sb1Addr , sbDim1 , sbDstAM1);
             }
 
@@ -1083,7 +1087,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
           }
           else
           {
-            
+
             if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_1_2)
             {  *dstPtr16 = *srcPtr;
 			        srcPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)srcPtr, 1, srcAM0);
@@ -1101,7 +1105,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
               #else
                 *dstPtr = (uint8_t)*srcPtr16;
                 dstPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)dstPtr, 1, dstAM0);
-              #endif 
+              #endif
               srcPtr16 = (uint16_t *)hostEmulation_addressUpdate((uint64_t)srcPtr16, 2, srcAM0);
             }
             else
@@ -1127,11 +1131,11 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
         {
           nextTransferRecord->dicnt1--;
         }
-        
+
         switch( DFMT )
         {
           case DMAUTILSAUTOINC3D_DFMT_COMP : /*compression*/
-          { 
+          {
             /*update CDB table address*/
             nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord->daddr , nextTransferRecord->ddim1, 0);
             /*move source pointer*/
@@ -1139,7 +1143,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             break;
           }
           case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-          { 
+          {
             /*update CDB table address*/
             nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord->addr  , nextTransferRecord->dim1, 0);
             /*move destination pointer*/
@@ -1155,8 +1159,8 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             break;
           }
         }
-        /*For compression/decompression type 9 transfer currently we assume that icnt0 = dicnt0 and icnt1 = dicnt1*/ 
-        
+        /*For compression/decompression type 9 transfer currently we assume that icnt0 = dicnt0 and icnt1 = dicnt1*/
+
         if ( nextTransferRecord->icnt1 == 0)
         {
           loopCnt1Reset = 1;
@@ -1176,8 +1180,8 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
           }
 		      switch( DFMT )
           {
-            case DMAUTILSAUTOINC3D_DFMT_COMP : 
-            { 
+            case DMAUTILSAUTOINC3D_DFMT_COMP :
+            {
               /*update CDB table address*/
               nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord1->daddr , nextTransferRecord->ddim2, 0);
               nextTransferRecord1->daddr = nextTransferRecord->daddr;
@@ -1187,7 +1191,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
               break;
             }
             case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord1->addr  , nextTransferRecord->dim2, 0);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
@@ -1208,7 +1212,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             }
           }
         }
-          
+
         if ( nextTransferRecord->icnt2 == 0)
         {
           loopCnt2Reset= 1;
@@ -1218,7 +1222,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
           switch( DFMT )
           {
             case DMAUTILSAUTOINC3D_DFMT_COMP : /*compression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3,   srcAM3);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
@@ -1226,7 +1230,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
               break;
             }
             case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3, 0);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
@@ -1235,17 +1239,17 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             }
             default :
             {
-              nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3,   srcAM3);  
+              nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3,   srcAM3);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
               nextTransferRecord2->addr  = nextTransferRecord->addr;
               break;
             }
           }
         }
-        
+
         if ( nextTransferRecord->dicnt2 == 0)
         {
-          
+
 		      if( DFMT != DMAUTILSAUTOINC3D_DFMT_COMP && DFMT != DMAUTILSAUTOINC3D_DFMT_DECOMP)
           {
          	  #if !USE_INTERIMBUFFER_FOR_NONCOMPRESSED_TR
@@ -1261,7 +1265,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
           switch( DFMT )
           {
             case DMAUTILSAUTOINC3D_DFMT_COMP : /*compression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord2->daddr , nextTransferRecord->ddim3, 0);
               nextTransferRecord1->daddr = nextTransferRecord->daddr;
@@ -1269,7 +1273,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
               break;
             }
             case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-            { 
+            {
               /*move destination pointer*/
               nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord2->daddr , nextTransferRecord->ddim3,   dstAM3);
               nextTransferRecord1->daddr = nextTransferRecord->daddr;
@@ -1287,7 +1291,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             }
           }
         }
-        
+
         /*Updating the start offset for next SB to be read in next iteration of the while loop or next trigger*/
         if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP && nextTransferRecord->icnt3 != 0 && nextTransferRecord->dicnt3 != 0)
         {
@@ -1336,7 +1340,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
           nextTransferRecord->icnt3 = 0;
           break;
         }
-      
+
       }
     #if USE_INTERIMBUFFER_FOR_NONCOMPRESSED_TR
       if (DFMT != DMAUTILSAUTOINC3D_DFMT_COMP && DFMT != DMAUTILSAUTOINC3D_DFMT_DECOMP)
@@ -1370,7 +1374,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
            }
            else
           {
-            dstPtr = (uint8_t *)nextTransferRecord->daddr;      
+            dstPtr = (uint8_t *)nextTransferRecord->daddr;
             for (icnt0 = 0; icnt0 < nextTransferRecord->dicnt0; icnt0++)
             {
               *dstPtr = *srcPtr;
@@ -1381,7 +1385,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
           nextTransferRecord->dicnt1--;
 
           nextTransferRecord->daddr = hostEmulation_addressUpdate(nextTransferRecord->daddr, nextTransferRecord->ddim1, dstAM1);
-          
+
           if ( nextTransferRecord->dicnt1 == 0)
           {
             loopCnt1Reset = 1;
@@ -1447,7 +1451,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
         free(interimBuffer);
       }
     }
-  }  
+  }
   return 0;
 }
 /*End of Software Compression Routine*/
@@ -1549,7 +1553,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
       uint32_t AM0, AM1, AM2, AM3, sbAM0, sbAM1;
       uint64_t srcAM0, srcAM1, srcAM2, srcAM3;
       uint64_t dstAM0, dstAM1, dstAM2, dstAM3;
-      
+
       uint64_t sbSrcAM0, sbSrcAM1;
       uint64_t sbDstAM0, sbDstAM1;
 
@@ -1606,14 +1610,14 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
       /*Decoding secondary TR*/
       if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP ) /*TODO compression CSL definitions don't exist yet...*/
       {
-        sectrPtr   = (CSL_UdmapSecTR *)(origTransferRecord->daddr); 
+        sectrPtr   = (CSL_UdmapSecTR *)(origTransferRecord->daddr);
         sDim0      = (int32_t)(sectrPtr->data[2]);
         dDim0      = (int32_t)(sectrPtr->data[3]);
-        sbDim1     = (int32_t)(sectrPtr->flags & 0xFFFFFFF0);  
+        sbDim1     = (int32_t)(sectrPtr->flags & 0xFFFFFFF0);
         cmprsType  = sectrPtr->data[0] & 0xF;
         sbAM0      = (sectrPtr->data[0] >> 4) & 0x3;
         sbAM1      = (sectrPtr->data[0] >> 6) & 0x3;
-        
+
         switch( cmprsType )
         {
           case DMAUTILSAUTOINC3D_CMPRS_ZERO :
@@ -1688,11 +1692,11 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
         {
           sbDstAM0 = (sbAM0 == 0 ) ? 0 : ( (sbAM0 == 1) ? circMask0 : circMask1  );/* Circular update */
           sbSrcAM0 = 0; /* Linear Update */
-  
+
           sbDstAM1 = (sbAM1 == 0 ) ? 0 : ( (sbAM1 == 1) ? circMask0 : circMask1  );/* Circular update */
           sbSrcAM1 = 0; /* Linear Update */
         }
-        else 
+        else
         {
           sbDstAM0 = 0;
           sbSrcAM0 = 0;
@@ -1714,16 +1718,16 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
         dstAM3 = 0;/* Linear Update */
         srcAM3 = (AM3 == 0 ) ? 0 : ( (AM3 == 1) ? circMask0 : circMask1  );
 
-        
+
         if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP) /* TODO decompression CSL definition doesn't exist yet...*/
         {
-          sbDstAM0 = 0; /* Linear Update */ 
+          sbDstAM0 = 0; /* Linear Update */
           sbSrcAM0 = (sbAM0 == 0 ) ? 0 : ( (sbAM0 == 1) ? circMask0 : circMask1  );/* Circular update */
-  
-          sbDstAM1 = 0; /* Linear Update */  
+
+          sbDstAM1 = 0; /* Linear Update */
           sbSrcAM1 = (sbAM1 == 0 ) ? 0 : ( (sbAM1 == 1) ? circMask0 : circMask1  );/* Circular update */
         }
-        else 
+        else
         {
           sbDstAM0 = 0;
           sbSrcAM0 = 0;
@@ -1778,14 +1782,14 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
 
       while (1)
       {
-        uint8_t* sbCdbPtr;  /*stores the pointer to cdb table entry corresponding to a SB being encoded or decoded.*/ 
+        uint8_t* sbCdbPtr;  /*stores the pointer to cdb table entry corresponding to a SB being encoded or decoded.*/
         uint8_t* sbAddr;    /*stores the pointer to to a uncomressed SB data being encoded or decoded. */
         if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP )    /*TODO decompression CSL definitions don't exist yet...*/
         {
           srcPtr = (uint8_t *)nextTransferRecord->addr;
           cdbPtr = (uint8_t *)nextTransferRecord->daddr;
           dstPtr = (uint8_t *)hostEmulation_addressUpdate(sectrPtr->addr , ((int32_t *)cdbPtr)[1], 0);
-          
+
           sbCdbPtr    = cdbPtr;
           sbAddr      = srcPtr;    /*Stores the base pointer for a SB row*/
         }
@@ -1794,7 +1798,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
           cdbPtr = (uint8_t *)  nextTransferRecord->addr;
           sbCdbPtr    = cdbPtr;
           dstPtr = (uint8_t *)  nextTransferRecord->daddr;
-          sbAddr = dstPtr; 
+          sbAddr = dstPtr;
         }
         else
         {
@@ -1807,7 +1811,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
                dstPtr16 = (uint16_t *)dstPtr;
           #endif
         }
-        
+
         for (icnt0 = 0; icnt0 < nextTransferRecord->icnt0; icnt0++)
         {
           if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP )/* TODO compression CSL definition doesn't exist yet...*/
@@ -1836,7 +1840,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
               {
                 uint8_t newLen = DmaUtilsAutoInc3d_compressElem( sectrPtr , (uint32_t)(*srcPtr) , &cmprs );
                 /*merge compressed data into output*/
-                
+
                 if ( len + newLen > 128 ) /*This won't fit in the current CDB*/
                 {
                   if ( cmprsType == DMAUTILSAUTOINC3D_CMPRS_ZERO )
@@ -1857,10 +1861,10 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
                   len = 0;
                   cdbCnt++;
                 }
-                
+
                 /*align compressed data starting bit with the output data*/
                 cmprs <<=  len & 0x7;
-                
+
                 /*deal with compressed data endianness agnostically*/
                 uint8_t touchedBytes = (newLen + (len & 0x7)) >> 3;
                 for ( i = 0; i <= touchedBytes; i++ )
@@ -1872,7 +1876,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
                 len   += newLen;
                 srcPtr = (uint8_t*)hostEmulation_addressUpdate((uint64_t)srcPtr , 1 , sbSrcAM0);
               }
-              sb1Addr = (uint8_t*)hostEmulation_addressUpdate((uint64_t)sb1Addr , sbDim1 , sbSrcAM1);  
+              sb1Addr = (uint8_t*)hostEmulation_addressUpdate((uint64_t)sb1Addr , sbDim1 , sbSrcAM1);
             }
             /*
               finish last CDB in superblock
@@ -1904,10 +1908,10 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
             uint8_t* sb1Addr       = sbAddr;
             int32_t srcJump       = 0;
             uint32_t curBitPosition  = 0;
-            
+
             switch( cmprsType )
             {
-              case DMAUTILSAUTOINC3D_CMPRS_ZERO : 
+              case DMAUTILSAUTOINC3D_CMPRS_ZERO :
               {
                 maxSymbolSize = 16; /*actual = 9*/
                 break;
@@ -1929,7 +1933,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
 
             /*get start of superblock*/
             srcPtr = (uint8_t*)hostEmulation_addressUpdate(sectrPtr->addr, ((int32_t*)sbCdbPtr )[1], 0); /*srcAM0 ==> 0?*/
-            
+
             uint32_t  sbHeight = ((sectrPtr->data[1] >> 16) & 0xFFFF);
             uint32_t  sbWidth  = 16 * ((sectrPtr->data[1] & 0xFFFF));
             uint8_t   bias      =  ( (sectrPtr->data[0]) >> 8 ) & 0xFF;
@@ -1939,7 +1943,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
               dstPtr = sb1Addr;
               for (sbIcnt0 = 0; sbIcnt0 < sbWidth; )
               {
-                
+
                 if(cmprsType == DMAUTILSAUTOINC3D_CMPRS_ZERO)
                 {
                   /*CDB Decode, and dstPtr update happens within this function:*/
@@ -1956,7 +1960,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
                 {
                   /*get at least one symbol of data in this CDB and be endianess agnostic*/
                   cmprs = 0;
-                  uint8_t len = (cdbLen > maxSymbolSize) ? maxSymbolSize  : cdbLen;		// COpy 
+                  uint8_t len = (cdbLen > maxSymbolSize) ? maxSymbolSize  : cdbLen;		// COpy
                   len         = ( len & 0x7 )            ? (len >> 3) + 1 : (len >> 3);
                   uint8_t off = (128 - cdbLen) >> 3;
 
@@ -1965,7 +1969,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
                   {
                     cmprs |= *(srcPtr + off + i) << (i << 3);
                   }
-                  
+
                   /*align data*/
                   if (cdbLen & 0x7)
                   {
@@ -2011,7 +2015,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
                 }
 
               }
-              
+
               sb1Addr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)sb1Addr , sbDim1 , sbDstAM1);
             }
 
@@ -2020,7 +2024,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
           }
           else
           {
-            
+
             if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_1_2)
             {  *dstPtr16 = *srcPtr;
 			        srcPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)srcPtr, 1, srcAM0);
@@ -2038,7 +2042,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
               #else
                 *dstPtr = (uint8_t)*srcPtr16;
                 dstPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)dstPtr, 1, dstAM0);
-              #endif 
+              #endif
               srcPtr16 = (uint16_t *)hostEmulation_addressUpdate((uint64_t)srcPtr16, 2, srcAM0);
             }
             else
@@ -2064,11 +2068,11 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
         {
           nextTransferRecord->dicnt1--;
         }
-        
+
         switch( DFMT )
         {
           case DMAUTILSAUTOINC3D_DFMT_COMP : /*compression*/
-          { 
+          {
             /*update CDB table address*/
             nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord->daddr , nextTransferRecord->ddim1, 0);
             /*move source pointer*/
@@ -2076,7 +2080,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
             break;
           }
           case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-          { 
+          {
             /*update CDB table address*/
             nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord->addr  , nextTransferRecord->dim1, 0);
             /*move destination pointer*/
@@ -2092,8 +2096,8 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
             break;
           }
         }
-        /*For compression/decompression type 9 transfer currently we assume that icnt0 = dicnt0 and icnt1 = dicnt1*/ 
-        
+        /*For compression/decompression type 9 transfer currently we assume that icnt0 = dicnt0 and icnt1 = dicnt1*/
+
         if ( nextTransferRecord->icnt1 == 0)
         {
           loopCnt1Reset = 1;
@@ -2113,8 +2117,8 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
           }
 		      switch( DFMT )
           {
-            case DMAUTILSAUTOINC3D_DFMT_COMP : 
-            { 
+            case DMAUTILSAUTOINC3D_DFMT_COMP :
+            {
               /*update CDB table address*/
               nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord1->daddr , nextTransferRecord->ddim2, 0);
               nextTransferRecord1->daddr = nextTransferRecord->daddr;
@@ -2124,7 +2128,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
               break;
             }
             case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord1->addr  , nextTransferRecord->dim2, 0);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
@@ -2155,7 +2159,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
           switch( DFMT )
           {
             case DMAUTILSAUTOINC3D_DFMT_COMP : /*compression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3,   srcAM3);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
@@ -2163,7 +2167,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
               break;
             }
             case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3, 0);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
@@ -2172,17 +2176,17 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
             }
             default :
             {
-              nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3,   srcAM3);  
+              nextTransferRecord->addr   = hostEmulation_addressUpdate(nextTransferRecord2->addr  , nextTransferRecord->dim3,   srcAM3);
               nextTransferRecord1->addr  = nextTransferRecord->addr;
               nextTransferRecord2->addr  = nextTransferRecord->addr;
               break;
             }
           }
         }
-        
+
         if ( nextTransferRecord->dicnt2 == 0)
         {
-          
+
 	  if( DFMT != DMAUTILSAUTOINC3D_DFMT_COMP && DFMT != DMAUTILSAUTOINC3D_DFMT_DECOMP)
           {
          	  #if !USE_INTERIMBUFFER_FOR_NONCOMPRESSED_TR
@@ -2198,7 +2202,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
           switch( DFMT )
           {
             case DMAUTILSAUTOINC3D_DFMT_COMP : /*compression*/
-            { 
+            {
               /*update CDB table address*/
               nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord2->daddr , nextTransferRecord->ddim3, 0);
               nextTransferRecord1->daddr = nextTransferRecord->daddr;
@@ -2206,7 +2210,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
               break;
             }
             case DMAUTILSAUTOINC3D_DFMT_DECOMP : /*decompression*/
-            { 
+            {
               /*move destination pointer*/
               nextTransferRecord->daddr  = hostEmulation_addressUpdate(nextTransferRecord2->daddr , nextTransferRecord->ddim3,   dstAM3);
               nextTransferRecord1->daddr = nextTransferRecord->daddr;
@@ -2224,7 +2228,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
             }
           }
         }
-        
+
         /*Updating the start offset for next SB to be read in next iteration of the while loop or next trigger*/
         if ( DFMT == DMAUTILSAUTOINC3D_DFMT_COMP && nextTransferRecord->icnt3 != 0 && nextTransferRecord->dicnt3 != 0)
         {

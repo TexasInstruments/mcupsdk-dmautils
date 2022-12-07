@@ -42,7 +42,11 @@
 /* ========================================================================== */
 #include <string.h>
 #include <stdio.h>
+#if !defined(MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/udma_standalone/udma.h"
+#else
+#include "drivers/dmautils/udma_standalone/udma.h"
+#endif
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -56,7 +60,11 @@ CSL_DRU_t                gHost_DRU_t;
 #else
 //:TODO:
 #if defined (SOC_J721S2) || defined (SOC_AM62A)
+#if !defined(MCU_PLUS_SDK)
   #include <ti/csl/soc/am62a/src/cslr_soc_baseaddress.h>
+#else
+  #include <drivers/hw_include/am62ax/cslr_soc_baseaddress.h>
+#endif
 //  #define UDMA_UTC_BASE_DRU0           (CSL_C7X256V0_DRU_BASE)
   #define UDMA_UTC_BASE_DRU0 (0x7c400000UL)
 
@@ -211,7 +219,7 @@ static int32_t Udma_chFreeResource(Udma_ChHandle chHandle)
 {
   int32_t                 retVal = UDMA_SOK;
   Udma_DrvHandle          drvHandle;
-  
+
   drvHandle = chHandle->drvHandle;
 
   if ( chHandle->druChNum  != UDMA_DMA_CH_INVALID )
@@ -477,7 +485,7 @@ int32_t Udma_chDisable(Udma_ChHandle chHandle, uint32_t timeout)
 volatile uint64_t *Udma_druGetTriggerRegAddr(Udma_ChHandle chHandle)
 {
     int32_t                 retVal = UDMA_SOK;
-    Udma_DrvHandle          drvHandle;   
+    Udma_DrvHandle          drvHandle;
     volatile uint64_t      *pSwTrigReg = (volatile uint64_t *) NULL_PTR;
 
     /* Error check */
@@ -496,7 +504,7 @@ volatile uint64_t *Udma_druGetTriggerRegAddr(Udma_ChHandle chHandle)
     }
 
     if(UDMA_SOK == retVal)
-    {        
+    {
         pSwTrigReg = &chHandle->pDruRtRegs->CHRT_SWTRIG;
     }
 
@@ -547,7 +555,7 @@ void UdmaChUtcPrms_init(Udma_ChUtcPrms *utcPrms)
 
 void Udma_chDruSubmitTr(Udma_ChHandle chHandle, const CSL_UdmapTR *tr)
 {
-    uint32_t                utcChNum;   
+    uint32_t                utcChNum;
     const Udma_UtcInstInfo *utcInfo;
 
     utcInfo = chHandle->utcInfo;
