@@ -1,3 +1,4 @@
+
 let path = require('path');
 
 let device = "am62ax";
@@ -36,24 +37,19 @@ const defines_c75 = {
 
 const buildOptionCombos = [
     { device: device, cpu: "c75x", cgt: "ti-c7000"},
+   // { device: device, cpu: "c75x", cgt: "ti-c7x-hostemu"},
 ];
 
-const cflags = {
-    debug: [
-        "-Wno-address-of-packed-member",
-    ],
-    release: [
-        "-Wno-address-of-packed-member",
-    ],
-};
 
 function getComponentProperty() {
     let property = {};
+
 
     property.dirPath = path.resolve(__dirname, "..");
     property.type = "library";
     property.name = "dmautils";
     property.isInternal = false;
+
     property.buildOptionCombos = buildOptionCombos;
 
     return property;
