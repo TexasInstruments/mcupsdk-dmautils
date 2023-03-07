@@ -23,7 +23,7 @@
 /*                                                                          */
 /****************************************************************************/
 -c
--heap  0x2000
+-heap  0x20000
 -stack 0x2000
 --args 0x1000
 --diag_suppress=10068 // "no matching section"
@@ -35,6 +35,7 @@
 #define C7X_BOOT_BASE           (C7X_ALLOCATED_START + 0x00200000)
 #define C7X_VECTOR_BASE         (C7X_ALLOCATED_START + 0x00400000)
 #define C7X_DDR_SPACE_BASE      (C7X_ALLOCATED_START + 0x00410000)
+
 
 MEMORY
 {

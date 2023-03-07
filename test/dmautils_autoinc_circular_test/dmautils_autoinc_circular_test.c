@@ -41,10 +41,10 @@
  *
  *  Requirement: DOX_REQ_TAG(PDK-2643:PDK-2645:PDK-2646)
  */
- 
 
- 
- 
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -52,12 +52,20 @@
 #if defined(HOST_EMULATION)
 #include <malloc.h>
 #else
+#if !defined (MCU_PLUS_SDK)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/c7x/cslr_C7X_CPU.h>
+#else
+#include <drivers/hw_include/csl_clec.h>
+#endif
 #endif
 
 #include "dmautils_autoinc_circular_example.h"
+#if !defined (MCU_PLUS_SDK)
 #include "ti/drv/sciclient/sciclient.h"
+#else
+#include <drivers/sciclient.h>
+#endif
 
 #define TEST_malloc(heap, size)   malloc(size)
 #define TEST_free(ptr)            free(ptr)
@@ -240,7 +248,7 @@ int32_t main()
     }
     test_sciclientDmscGetVersion(NULL, 0 );
     appC7xClecInitDru();
-#endif 
+#endif
 
 #endif
 

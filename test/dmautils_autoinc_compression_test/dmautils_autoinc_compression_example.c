@@ -46,12 +46,20 @@ operate a function on internal memory and transfer back the result with compress
 #include <math.h>
 #include <stdint.h>
 
-#include "ti/drv/udma/dmautils/udma_standalone/udma.h" //PC-- this header file is included in dmautils_autoincrement_3d_priv.h. But, adding it here to fix some builing undefined errors.
+#if !defined(MCU_PLUS_SDK)
+#include "ti/drv/udma/dmautils/udma_standalone/udma.h"
+#else
+#include <drivers/dmautils/udma_standalone/udma.h>
+#endif //PC-- this header file is included in dmautils_autoincrement_3d_priv.h. But, adding it here to fix some builing undefined errors.
 #include "dmautils_autoinc_compression_example.h"
-#include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
+
+#if !defined(MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/dmautils.h"
-
-
+#include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
+#else
+#include <drivers/dmautils/dmautils.h>
+#include <drivers/dmautils/src/dmautils_autoincrement_3d_priv.h>
+#endif
 
 //#include "ti/drv/udma/udma.h"
 
@@ -120,13 +128,13 @@ typedef enum{
 
 
 
-int32_t tensorCopy( uint8_t* const pInput, 
-            uint8_t* const pOutput, 
-            uint8_t* const sectr, 
+int32_t tensorCopy( uint8_t* const pInput,
+            uint8_t* const pOutput,
+            uint8_t* const sectr,
             uint8_t* const cdbTable,
-            DmautilsAutoInc_AnalyticCompTest_config *testConfig, 
-            uint8_t* pIntMemBase, 
-            uint32_t intMemSize, 
+            DmautilsAutoInc_AnalyticCompTest_config *testConfig,
+            uint8_t* pIntMemBase,
+            uint32_t intMemSize,
             uint32_t compress)
 {
 
@@ -156,7 +164,7 @@ int32_t tensorCopy( uint8_t* const pInput,
   UdmaInitPrms_init(instId, &initPrms);
   initPrms.printFxn = &testDmaAutoIncPrintf;
   //PC-- commented for now
-  //initPrms.skipGlobalEventReg = 1; //TO make it run on AVV  with this value set master event handle would not be created. 
+  //initPrms.skipGlobalEventReg = 1; //TO make it run on AVV  with this value set master event handle would not be created.
     initPrms.printFxn = &testDmaAutoIncPrintf;
     retVal = Udma_init(drvHandle, &initPrms);
   if(UDMA_SOK != retVal)
@@ -184,19 +192,19 @@ int32_t tensorCopy( uint8_t* const pInput,
 
   chInitParams[DMAUTILSTESTAUTOINC_CHANNEL_IN].dmaQueNo  = 0;
 
-  
+
   chInitParams[DMAUTILSTESTAUTOINC_CHANNEL_IN ].druOwner    = DMAUTILSAUTOINC3D_DRUOWNER_DIRECT_TR;
   retVal = DmaUtilsAutoInc3d_init(dmautilsContext, &initParams, chInitParams);
-  
+
   const int32_t CIBLENGTH = 8;
   int32_t icnt0, icnt1, icnt2, icnt3;
   int32_t sdim0, sdim1, sdim2, sdim3;
   int32_t dicnt0, dicnt1, dicnt2, dicnt3;
   int32_t ddim0, ddim1, ddim2, ddim3;
-  int32_t numSBinTensorWidth = testConfig->tensorWidth / testConfig->sbWidth;  
+  int32_t numSBinTensorWidth = testConfig->tensorWidth / testConfig->sbWidth;
   int32_t triggers;
   int32_t i;
-  
+
   if ( retVal != UDMA_SOK )
   {
     goto Exit;
@@ -216,22 +224,22 @@ int32_t tensorCopy( uint8_t* const pInput,
   transferProp[0].syncType               = DMAUTILSAUTOINC3D_SYNC_2D;
 
   transferProp[0].dmaDfmt                = (compress == 1) ? DMAUTILSAUTOINC3D_DFMT_COMP : DMAUTILSAUTOINC3D_DFMT_DECOMP;
-  
+
   if(compress ==  1)
   {
-    
+
     if(testConfig->outDataFlowType == DMAUTILSAUTOINC_ROW_FLOW)
-    { 
+    {
       icnt0 = testConfig->outProcSize / testConfig->sbWidth;
       sdim0 = testConfig->sbWidth;
       dicnt0 = icnt0;
       ddim0 = CIBLENGTH;
-      
+
       icnt1 = testConfig->tensorHeight / testConfig->sbHeight;
       sdim1 = testConfig->tensorWidth * testConfig->sbHeight;
       dicnt1 =  icnt1;
       ddim1 = numSBinTensorWidth * CIBLENGTH;
-      
+
       if(testConfig->tensorWidth > testConfig->outProcSize)
       {
         icnt2 = 2;
@@ -245,7 +253,7 @@ int32_t tensorCopy( uint8_t* const pInput,
           dicnt2 = testConfig->tensorWidth / testConfig->outProcSize + 1;
         }
         ddim2 = icnt0 * CIBLENGTH;
-        
+
         if (testConfig->tensorWidth % (2*  testConfig->outProcSize) == 0)
         {
           icnt3 = testConfig->tensorWidth / (2*  testConfig->outProcSize);
@@ -254,12 +262,12 @@ int32_t tensorCopy( uint8_t* const pInput,
         {
           icnt3 = testConfig->tensorWidth / (2*  testConfig->outProcSize) + 1;
         }
-        sdim3 = 2 * testConfig->outProcSize;   
-        
+        sdim3 = 2 * testConfig->outProcSize;
+
         dicnt3 =  1;
         ddim3 = 0;
-      }   
-    } 
+      }
+    }
     else
     {
       if(testConfig->tensorWidth == testConfig->outProcSize)
@@ -267,8 +275,8 @@ int32_t tensorCopy( uint8_t* const pInput,
         icnt0 = testConfig->tensorWidth / testConfig->sbWidth;
         sdim0 = testConfig->sbWidth;
         dicnt0 = icnt0;
-        ddim0 = CIBLENGTH;  
-        
+        ddim0 = CIBLENGTH;
+
         icnt1 = testConfig->Nco / testConfig->sbHeight;
         sdim1 = testConfig->tensorWidth * testConfig->sbHeight;
         dicnt1 =  icnt1;
@@ -294,27 +302,27 @@ int32_t tensorCopy( uint8_t* const pInput,
         {
           icnt3 = testConfig->tensorHeight / (2*  testConfig->Nco) + 1;
         }
-        sdim3 = 2 * testConfig->tensorWidth * testConfig->Nco;   
-        
+        sdim3 = 2 * testConfig->tensorWidth * testConfig->Nco;
+
         dicnt3 =  1;
         ddim3 = 0;
-      }  
+      }
     }
   }
   else
   {
     if(testConfig->inDataFlowType == DMAUTILSAUTOINC_ROW_FLOW)
-    { 
+    {
       icnt0 = testConfig->inProcSize / testConfig->sbWidth;
       sdim0 = CIBLENGTH;
       dicnt0 = icnt0;
       ddim0 = testConfig->sbWidth;
-      
+
       icnt1 = testConfig->tensorHeight / testConfig->sbHeight;
       sdim1 = numSBinTensorWidth * CIBLENGTH;
       dicnt1 =  icnt1;
       ddim1 = testConfig->tensorWidth * testConfig->sbHeight;
-      
+
       if(testConfig->tensorWidth > testConfig->inProcSize)
       {
         if (testConfig->tensorWidth % ( testConfig->inProcSize) == 0)
@@ -327,11 +335,11 @@ int32_t tensorCopy( uint8_t* const pInput,
         }
         sdim2 = icnt0 * CIBLENGTH;
         dicnt2 =  2;
-        ddim2 = testConfig->inProcSize; 
+        ddim2 = testConfig->inProcSize;
 
 
         icnt3 = 1;
-        sdim3 = 0; 
+        sdim3 = 0;
         if (testConfig->tensorWidth % (2*  testConfig->inProcSize) == 0)
         {
           dicnt3 = testConfig->tensorWidth / (2*  testConfig->inProcSize);
@@ -341,9 +349,9 @@ int32_t tensorCopy( uint8_t* const pInput,
           dicnt3 = testConfig->tensorWidth / (2*  testConfig->inProcSize) + 1;
         }
         ddim3 = 2 * testConfig->inProcSize;
-      }  
+      }
 
-    } 
+    }
     else
     {
       if(testConfig->tensorWidth == testConfig->inProcSize)
@@ -351,13 +359,13 @@ int32_t tensorCopy( uint8_t* const pInput,
         icnt0 = testConfig->tensorWidth / testConfig->sbWidth;
         sdim0 = CIBLENGTH;
         dicnt0 = icnt0;
-        ddim0 = testConfig->sbWidth;  
-        
+        ddim0 = testConfig->sbWidth;
+
         icnt1 = testConfig->Nci / testConfig->sbHeight;
-        sdim1 = numSBinTensorWidth * CIBLENGTH; 
+        sdim1 = numSBinTensorWidth * CIBLENGTH;
         dicnt1 =  icnt1;
         ddim1 = testConfig->tensorWidth * testConfig->sbHeight;
-        
+
         if(testConfig->tensorHeight % testConfig->Nci == 0)
         {
           icnt2 = testConfig->tensorHeight / testConfig->Nci;
@@ -368,11 +376,11 @@ int32_t tensorCopy( uint8_t* const pInput,
         }
         sdim2 = numSBinTensorWidth * icnt1 * CIBLENGTH;
         icnt3 = 1;
-        sdim3 = 0;   
+        sdim3 = 0;
         dicnt2 =  2;
         ddim2 =  testConfig->tensorWidth * testConfig->Nci;
 
-        
+
         if (testConfig->tensorHeight % (2*  testConfig->Nci) == 0)
         {
           dicnt3 = testConfig->tensorHeight / (2*  testConfig->Nci);
@@ -382,15 +390,15 @@ int32_t tensorCopy( uint8_t* const pInput,
           dicnt3 = testConfig->tensorHeight / (2*  testConfig->Nci) + 1;
         }
         ddim3 = 2 * testConfig->tensorWidth * testConfig->Nci;
-      }  
+      }
     }
   }
 
-  triggers = ((icnt2 * icnt3) < (dicnt2 * dicnt3)) ? (icnt2 * icnt3) : (dicnt2 * dicnt3); 
+  triggers = ((icnt2 * icnt3) < (dicnt2 * dicnt3)) ? (icnt2 * icnt3) : (dicnt2 * dicnt3);
 
-  transferProp[0].transferDim.sicnt0     = icnt0; 
-  transferProp[0].transferDim.sicnt1     = icnt1; 
-  transferProp[0].transferDim.sicnt2     = icnt2; 
+  transferProp[0].transferDim.sicnt0     = icnt0;
+  transferProp[0].transferDim.sicnt1     = icnt1;
+  transferProp[0].transferDim.sicnt2     = icnt2;
   transferProp[0].transferDim.sicnt3     = icnt3;
 
   transferProp[0].transferDim.dicnt0     = dicnt0;
@@ -422,31 +430,31 @@ int32_t tensorCopy( uint8_t* const pInput,
   transferProp[0].cmpProp.sbDim1         = testConfig->tensorWidth;
   transferProp[0].cmpProp.sbAM0          = 0;
   transferProp[0].cmpProp.sbAM1          = 0;
-  
+
   transferProp[0].transferDim.sdim1      = sdim1;
-  transferProp[0].transferDim.sdim2      = sdim2; 
+  transferProp[0].transferDim.sdim2      = sdim2;
   transferProp[0].transferDim.sdim3      = sdim3;
-  
+
   transferProp[0].transferDim.ddim1      = ddim1; // table dims
   transferProp[0].transferDim.ddim2      = ddim2;
   transferProp[0].transferDim.ddim3      = ddim3;
-  
-  transferProp[0].cmpProp.sDim0          = sdim0; 
+
+  transferProp[0].cmpProp.sDim0          = sdim0;
   transferProp[0].cmpProp.dDim0          = ddim0; //2 rows per superblock
-  
+
 
   transferProp[0].ioPointers.srcPtr      = pInput;
   transferProp[0].ioPointers.dstPtr      = pOutput;
   transferProp[0].ioPointers.strPtr      = sectr;
   transferProp[0].ioPointers.cdbPtr      = cdbTable;
 
-  
+
   retVal = DmaUtilsAutoInc3d_prepareTr(&trPrepParam, &transferProp[0]);
   if ( retVal != UDMA_SOK )
   {
     goto Exit;
   }
-  
+
   if(intMemUsedSize > intMemSize)
   {
     printf("insufficient memory, required is %d vs provided %d\n",intMemUsedSize, intMemSize);
@@ -460,19 +468,19 @@ int32_t tensorCopy( uint8_t* const pInput,
   //}
 
   retVal = DmaUtilsAutoInc3d_configure(dmautilsContext, DMAUTILSTESTAUTOINC_CHANNEL_IN, TrMem, numTrReq);
-  
+
 
   if ( retVal != UDMA_SOK )
   {
     goto Exit;
   }
-  
+
   for (i = 0; i < triggers; i++ )
   {
-  	
+
     //DMA trigger for pipe-up, out transfer is dummy and handled inside DMA utility
     DmaUtilsAutoInc3d_trigger(dmautilsContext, DMAUTILSTESTAUTOINC_CHANNEL_IN);
-    
+
 	//Wait for previous transfer of in
     DmaUtilsAutoInc3d_wait(dmautilsContext, DMAUTILSTESTAUTOINC_CHANNEL_IN);
   }

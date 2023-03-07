@@ -23,7 +23,7 @@
 /*                                                                          */
 /****************************************************************************/
 -c
--heap  0x2000
+-heap  0x800000
 -stack 0x2000
 --args 0x1000
 --diag_suppress=10068 // "no matching section"
@@ -41,26 +41,26 @@ MEMORY
   L2_Main (RWX): org = 0x7e000000, len = 0x100000
   L2_Aux  (RWX): org = 0x7f000000, len = 0x40000
   L1D          : org = 0x64E00000, len = 0x4000
-  C7X_DDR_SPACE: org = C7X_DDR_SPACE_BASE,  len = 0x01BF0000   /* 27.9MB DDR */
+  DDR          : org = 0x83000000, len = 0x4C000000
 }
 
 
 SECTIONS
 {
-    .text:_c_int00:   > L2_Main
-    .text       >       L2_Main
-    .bss        >       L2_Main  /* Zero-initialized data */
-    .data       >       L2_Main  /* Initialized data */
-    .cinit      >       L2_Main  /* could be part of const */
-    .init_array >       L2_Main  /* C++ initializations */
-    .stack      >       L2_Main
-    .args       >       L2_Main
-    .cio        >       L2_Main
-    .const      >       L2_Main
-    .switch     >       L2_Main /* For exception handling. */
+    .text:_c_int00:   > DDR
+    .text       >       DDR
+    .bss        >       DDR  /* Zero-initialized data */
+    .data       >       DDR  /* Initialized data */
+    .cinit      >       DDR  /* could be part of const */
+    .init_array >       DDR  /* C++ initializations */
+    .stack      >       DDR
+    .args       >       DDR
+    .cio        >       DDR
+    .const      >       DDR
+    .switch     >       DDR /* For exception handling. */
                              /* Not a default ELF section -- remove?  */
                              /* could be part of const */
-    .sysmem     >       L2_Main /* heap */
+    .sysmem     >       DDR /* heap */
 	.L2SramSect >       L2_Aux /* TODO */
-	.MSMCSramSect >     L2_Main
+	.MSMCSramSect >     DDR
 }

@@ -36,12 +36,12 @@
 /**
  *  \file dmautils_autoinc_compression_test.c
  *
- *  \brief Simple application demonstrating 2D auto increment feature of dmautils along with handling 
+ *  \brief Simple application demonstrating 2D auto increment feature of dmautils along with handling
  *        of last block.
  *
  *  Requirement: DOX_REQ_TAG(PDK-2643:PDK-2649:PDK-2646)
  */
- 
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,12 +51,20 @@
 #if defined(HOST_EMULATION)
 #include <malloc.h>
 #else
+#if !defined (MCU_PLUS_SDK)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/c7x/cslr_C7X_CPU.h>
+#else
+#include <drivers/hw_include/csl_clec.h>
+#endif
 #endif
 
 #include "dmautils_autoinc_compression_example.h"
+#if !defined (MCU_PLUS_SDK)
 #include "ti/drv/sciclient/sciclient.h"
+#else
+#include <drivers/sciclient.h>
+#endif
 
 #define TEST_malloc(heap, size)   malloc(size)
 #define TEST_free(ptr)            free(ptr)
@@ -64,7 +72,7 @@
 #define DRU_LOCAL_EVENT_START_J784S4   (664U)
 
 #define ALIGN(ptr) (uint8_t*)((((uint64_t)(ptr)+127)/128)*128)
- 
+
 #if HOST_EMULATION
   #define L2SRAM_SIZE (512*1024)
 #else
@@ -165,7 +173,7 @@ dmautilsAutoIncTest_config gTestConfig[] =
 
 
 DmautilsAutoInc_AnalyticCompTest_config gAnalyticCompTestConfig[] =
-{ 
+{
    {
      0, /*testcaseId*/
      0, /*requirementId*/
@@ -173,13 +181,13 @@ DmautilsAutoInc_AnalyticCompTest_config gAnalyticCompTestConfig[] =
      32, /*featurePlaneHeight*/
      1024, /*tensorWidth*/
      128, /*tensorHeight*/
-     128, /*outProcSize*/ 
-     1024, /*inProcSize*/  
-     128, /*Nco*/      
-     16, /*Nci*/       
-     DMAUTILSAUTOINC_ROW_FLOW, /*outDataFlowType*/ 
-     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/  
-     0, /*circularity*/     
+     128, /*outProcSize*/
+     1024, /*inProcSize*/
+     128, /*Nco*/
+     16, /*Nci*/
+     DMAUTILSAUTOINC_ROW_FLOW, /*outDataFlowType*/
+     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/
+     0, /*circularity*/
      128, /*sbWidth*/
      8, /*sbHeight*/
      0, /*algorithm*/
@@ -193,13 +201,13 @@ DmautilsAutoInc_AnalyticCompTest_config gAnalyticCompTestConfig[] =
      32, /*featurePlaneHeight*/
      1024, /*tensorWidth*/
      128, /*tensorHeight*/
-     1024, /*outProcSize*/ 
-     128, /*inProcSize*/  
-     16, /*Nco*/      
-     128, /*Nci*/       
-     DMAUTILSAUTOINC_COLUMN_FLOW, /*outDataFlowType*/ 
-     DMAUTILSAUTOINC_ROW_FLOW, /*inDataFlowType*/  
-     0, /*circularity*/     
+     1024, /*outProcSize*/
+     128, /*inProcSize*/
+     16, /*Nco*/
+     128, /*Nci*/
+     DMAUTILSAUTOINC_COLUMN_FLOW, /*outDataFlowType*/
+     DMAUTILSAUTOINC_ROW_FLOW, /*inDataFlowType*/
+     0, /*circularity*/
      128, /*sbWidth*/
      8, /*sbHeight*/
      1, /*algorithm*/
@@ -213,13 +221,13 @@ DmautilsAutoInc_AnalyticCompTest_config gAnalyticCompTestConfig[] =
      32, /*featurePlaneHeight*/
      1024, /*tensorWidth*/
      128, /*tensorHeight*/
-     128, /*outProcSize*/ 
-     64, /*inProcSize*/  
-     128, /*Nco*/      
-     128, /*Nci*/       
-     DMAUTILSAUTOINC_ROW_FLOW, /*outDataFlowType*/ 
-     DMAUTILSAUTOINC_ROW_FLOW, /*inDataFlowType*/  
-     0, /*circularity*/     
+     128, /*outProcSize*/
+     64, /*inProcSize*/
+     128, /*Nco*/
+     128, /*Nci*/
+     DMAUTILSAUTOINC_ROW_FLOW, /*outDataFlowType*/
+     DMAUTILSAUTOINC_ROW_FLOW, /*inDataFlowType*/
+     0, /*circularity*/
      64, /*sbWidth*/
      128, /*sbHeight*/
      1, /*algorithm*/
@@ -232,19 +240,19 @@ DmautilsAutoInc_AnalyticCompTest_config gAnalyticCompTestConfig[] =
      32, /*featurePlaneHeight*/
      1024, /*tensorWidth*/
      128, /*tensorHeight*/
-     1024, /*outProcSize*/ 
-     1024, /*inProcSize*/  
-     16, /*Nco*/      
-     8, /*Nci*/       
-     DMAUTILSAUTOINC_COLUMN_FLOW, /*outDataFlowType*/ 
-     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/  
-     0, /*circularity*/     
+     1024, /*outProcSize*/
+     1024, /*inProcSize*/
+     16, /*Nco*/
+     8, /*Nci*/
+     DMAUTILSAUTOINC_COLUMN_FLOW, /*outDataFlowType*/
+     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/
+     0, /*circularity*/
      1024, /*sbWidth*/
      8, /*sbHeight*/
      2, /*algorithm*/
      0, /*bias*/
    },
-  
+
    {
      4, /*testcaseId*/
      0, /*requirementId*/
@@ -252,13 +260,13 @@ DmautilsAutoInc_AnalyticCompTest_config gAnalyticCompTestConfig[] =
      32, /*featurePlaneHeight*/
      1024, /*tensorWidth*/
      128, /*tensorHeight*/
-     1024, /*outProcSize*/ 
-     1024, /*inProcSize*/  
-     1, /*Nco*/      
-     1, /*Nci*/       
-     DMAUTILSAUTOINC_COLUMN_FLOW, /*outDataFlowType*/ 
-     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/  
-     0, /*circularity*/     
+     1024, /*outProcSize*/
+     1024, /*inProcSize*/
+     1, /*Nco*/
+     1, /*Nci*/
+     DMAUTILSAUTOINC_COLUMN_FLOW, /*outDataFlowType*/
+     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/
+     0, /*circularity*/
      1024, /*sbWidth*/
      1, /*sbHeight*/
      2, /*algorithm*/
@@ -272,24 +280,24 @@ DmautilsAutoInc_AnalyticCompTest_config gAnalyticCompTestConfig[] =
      32, /*featurePlaneHeight*/
      1024, /*tensorWidth*/
      128, /*tensorHeight*/
-     128, /*outProcSize*/ 
-     1024, /*inProcSize*/  
-     128, /*Nco*/      
-     16, /*Nci*/       
-     DMAUTILSAUTOINC_ROW_FLOW, /*outDataFlowType*/ 
-     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/  
-     0, /*circularity*/     
+     128, /*outProcSize*/
+     1024, /*inProcSize*/
+     128, /*Nco*/
+     16, /*Nci*/
+     DMAUTILSAUTOINC_ROW_FLOW, /*outDataFlowType*/
+     DMAUTILSAUTOINC_COLUMN_FLOW, /*inDataFlowType*/
+     0, /*circularity*/
      128, /*sbWidth*/
      8, /*sbHeight*/
      0, /*algorithm*/
      39, /*bias*/
    },
-  
+
 };
 
 uint32_t randomNumberGeneratorState = 258001;
 uint8_t getRandomNumberLCG() {			//Linear congruential generator
-  uint32_t    returnValue; 
+  uint32_t    returnValue;
   uint32_t    largestValue = 16;
   uint32_t    randomNumberGeneratorStateLoc;
   randomNumberGeneratorStateLoc = ((randomNumberGeneratorState * (uint32_t)48271) + (uint32_t)0) >> 0x5U;	// c++11 minstd_rand
@@ -331,7 +339,7 @@ int32_t compareBuffers(uint8_t* buffer1, uint8_t* buffer2, int32_t width, int32_
 	firstmismatchFound = 1;
 	return fail;
       }
-  
+
     }
   }
   return fail;
@@ -409,10 +417,10 @@ int32_t main()
 
   uint8_t*    pIntMmeBase  = L2SRAM;
   uint32_t   intMemSize   = L2SRAM_SIZE;
-  
+
   //uint8_t    useDMA      ;
   uint8_t    compress;
-  
+
   int32_t status = -1;
   uint32_t testcaseIdx;
 
@@ -435,20 +443,20 @@ int32_t main()
       printf("Sciclient Init Failed \n");
       goto Exit;
     }
-    test_sciclientDmscGetVersion(NULL, 0 ); 
+    test_sciclientDmscGetVersion(NULL, 0 );
     appC7xClecInitDru();
-#endif 
 #endif
-  
-  for (testcaseIdx = 0; testcaseIdx < sizeof(gAnalyticCompTestConfig)/ sizeof(DmautilsAutoInc_AnalyticCompTest_config); testcaseIdx++) 
-  //for (testcaseIdx = 0; testcaseIdx < 1; testcaseIdx++) 
+#endif
+
+  for (testcaseIdx = 0; testcaseIdx < sizeof(gAnalyticCompTestConfig)/ sizeof(DmautilsAutoInc_AnalyticCompTest_config); testcaseIdx++)
+  //for (testcaseIdx = 0; testcaseIdx < 1; testcaseIdx++)
   {
       width    = gAnalyticCompTestConfig[testcaseIdx].tensorWidth;
       height   = gAnalyticCompTestConfig[testcaseIdx].tensorHeight;
       printf("width  : %d \n", width);
       printf("height : %d \n", height);
 
-      int32_t tensorSize = ceil((float)(width * height) / (float)(gAnalyticCompTestConfig[testcaseIdx].sbWidth)) * gAnalyticCompTestConfig[testcaseIdx].sbWidth;  
+      int32_t tensorSize = ceil((float)(width * height) / (float)(gAnalyticCompTestConfig[testcaseIdx].sbWidth)) * gAnalyticCompTestConfig[testcaseIdx].sbWidth;
       int32_t CDBTableWidth = ceil((float)(width) / (float)(gAnalyticCompTestConfig[testcaseIdx].sbWidth));
       int32_t CDBTableHeight = height / gAnalyticCompTestConfig[testcaseIdx].sbHeight;
       int32_t sectrSize = CDBTableWidth * CDBTableHeight * 8 + 64;
@@ -458,30 +466,30 @@ int32_t main()
 
       /* Buffer allocations for input, output and reference output  */
       #if(HOST_EMULATION)
-  
+
         input      = (uint8_t *)malloc(width * height);
         output     = (uint8_t *)malloc(width * height);
         compressed = (uint8_t *)malloc(width * height * 3);
         sectr      = (uint8_t *)malloc(width * height + 64); // need two headers since compression and decompression have different fields and they will be interleaved...
         refOut     = input;
       #else
-        //Malloc alignment to 128        
+        //Malloc alignment to 128
         sectr      = (uint8_t *)malloc(width * height + 64 + 128); // need two headers since compression and decompression have different fields and they will be interleaved...
         input      = (uint8_t *)malloc(width * height + 128);
         output     = (uint8_t *)malloc(width * height + 128);
-        compressed = (uint8_t *)malloc(width * height * 3 + 128);  
+        compressed = (uint8_t *)malloc(width * height * 3 + 128);
         //Alignment to 128
         sectr   = ALIGN(sectr);
         input   = ALIGN(input);
         output  = ALIGN(output);
         compressed  = ALIGN(compressed);
         refOut     = input;
-        
+
       #endif
       memset(output,     0, tensorSize);
       memset(compressed, 0, tensorSize * 3);
       memset(sectr,      0, sectrSize);
-      
+
       fillBufferRandom(input, width, height, 0);
       printf("Tensor Filled\n");
       compress = 1;
@@ -494,7 +502,7 @@ int32_t main()
                   compressed,
                   sectr, // leave room for decompression header
                   sectr + 32, // first CDB table entry is 32B after header
-                  &gAnalyticCompTestConfig[testcaseIdx], 
+                  &gAnalyticCompTestConfig[testcaseIdx],
                   pIntMmeBase,
                   intMemSize,
                   compress);
@@ -513,7 +521,7 @@ int32_t main()
                   output,
                   sectr, // leave room for decompression header
                   sectr + 32, // first CDB table entry is 32B after header
-                  &gAnalyticCompTestConfig[testcaseIdx], 
+                  &gAnalyticCompTestConfig[testcaseIdx],
                   pIntMmeBase,
                   intMemSize,
                   compress);
