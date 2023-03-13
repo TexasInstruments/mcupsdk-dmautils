@@ -20,6 +20,8 @@ obj/
 *.tiimage
 *.tiimage.hs
 *-fw
+*.o
+*.exe
 *.vscode/
 temp_stdout_*.txt
 generated/

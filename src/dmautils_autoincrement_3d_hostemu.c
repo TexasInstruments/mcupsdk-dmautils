@@ -1563,7 +1563,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
       uint32_t loopCnt1Reset, loopCnt2Reset;
       uint8_t * interimBuffer = NULL;
       uint32_t srcLoopExitCondition = 0;
-      uint32_t dstLoopExitCondition = 0;
+      //uint32_t dstLoopExitCondition = 0;
       uint32_t totalSrcCnt, totalDstCnt;
       int32_t nextSBStartOffset = 0; /*Stores offset of the SB compressed bitstream form the base of the compressed bitsteram. Used in DFMT == 5*/
       /* Clear the sw trigger so that next trigger can happen */
@@ -1776,7 +1776,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
       totalDstCnt = nextTransferRecord->dicnt0 * nextTransferRecord->dicnt1 * nextTransferRecord->dicnt2 * nextTransferRecord->dicnt3;
 
       srcLoopExitCondition  = ( totalSrcCnt < totalDstCnt )? totalSrcCnt : totalDstCnt;
-      dstLoopExitCondition  = srcLoopExitCondition;
+      //dstLoopExitCondition  = srcLoopExitCondition;
       /* Set the minimum value of icnt3 for both src and dst as TR completes whenever anyone of them  is exauhsted */
       /* Transfer source data to a intermediate linear buffer */
 
