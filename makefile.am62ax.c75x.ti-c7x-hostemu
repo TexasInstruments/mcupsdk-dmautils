@@ -7,8 +7,15 @@ include $(MCU_PLUS_SDK_PATH)/imports.mak
 
 CG_TOOL_ROOT=$(CGT_TI_C7X_HOSTEMU_PATH)
 
-CC=$(CGT_TI_C7X_HOSTEMU_PATH)/bin/g++-5 -c
-AR=$(CGT_TI_C7X_HOSTEMU_PATH)/bin/gcc-ar-5
+OS_VERSION := $(shell cat /etc/os-release | grep VERSION_ID= | sed -e "s|VERSION_ID=\"||" | sed -e "s|\"||")
+ifeq ($(OS_VERSION),18.04)
+	GCC_VERSION?=5
+else
+	GCC_VERSION?=11
+endif
+
+CC=$(CGT_TI_C7X_HOSTEMU_PATH)/bin/g++-$(GCC_VERSION) -c
+AR=$(CGT_TI_C7X_HOSTEMU_PATH)/bin/gcc-ar-$(GCC_VERSION)
 
 PROFILE?=release
 ConfigName:=$(PROFILE)
