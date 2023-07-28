@@ -411,10 +411,12 @@ int32_t CSL_druChResume(const CSL_DRU_t *pRegs, uint32_t chId);
  *                      Refer \ref CSL_DruCoreId
  *  \param   tr         [IN] Pointer to TR to be submitted.
  */
+#if !defined(HOST_EMULATION)
 static inline void CSL_druChSubmitTr(const CSL_DRU_t *pRegs,
                                      uint32_t chId,
                                      uint32_t coreId,
                                      const CSL_UdmapTR *tr);
+#endif
 
 #if defined (BUILD_C7X)
 /**
@@ -523,6 +525,7 @@ int32_t CSL_druGetQueueStatus(const CSL_DRU_t *pRegs,
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
 
+#if !defined(HOST_EMULATION)
 static inline void CSL_druChSubmitTr(const CSL_DRU_t *pRegs,
                                      uint32_t chId,
                                      uint32_t coreId,
@@ -545,6 +548,7 @@ static inline void CSL_druChSubmitTr(const CSL_DRU_t *pRegs,
 
     return;
 }
+#endif
 
 #if defined (BUILD_C7X)
 static inline void CSL_druChSubmitAtomicTr(CSL_DRU_t *pRegs,

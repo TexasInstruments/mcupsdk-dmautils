@@ -560,11 +560,13 @@ void Udma_chDruSubmitTr(Udma_ChHandle chHandle, const CSL_UdmapTR *tr)
 
     utcInfo = chHandle->utcInfo;
     utcChNum = chHandle->druChNum;
+#if !defined(HOST_EMULATION)
 #if defined (__C7100__)
     CSL_druChSubmitAtomicTr(utcInfo->druRegs, utcChNum, (__ulong8 *)  tr);
 #else
     Udma_DrvHandle          drvHandle = chHandle->drvHandle;
     CSL_druChSubmitTr(utcInfo->druRegs, utcChNum, drvHandle->druCoreId, tr);
+#endif
 #endif
 
     return;
