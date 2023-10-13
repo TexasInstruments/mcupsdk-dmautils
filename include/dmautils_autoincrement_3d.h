@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019
+ *  Copyright (c) Texas Instruments Incorporated 2022-2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -82,6 +82,11 @@
 extern "C" {
 #endif
 
+//:TODO: Actual value on SOC is 3 but currently VLAB supports only on
+/** \brief Number of TR's that can be submitted back to back channel  */
+#define DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE (1U)
+#define DMAUTILS_INTERFACE_WITH_NO_UDMA  (1U)
+
 typedef enum{
   DMAUTILS_SOK = CSL_PASS,
   DMAUTILS_EFAIL = CSL_EFAIL,
@@ -91,12 +96,6 @@ typedef enum{
 
 /** \brief Size of the programmable part of the secondary TR Size. This determines the starting offset of the CDB table during compression.*/
 #define DMAUTILS_COMP_SECTR_PROG_SIZE (32)
-
-//:TODO: Actual value on SOC is 3 but currently VLAB supports only on
-/** \brief Number of TR's that can be submitted back to back channel  */
-#define DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE (1U)
-
-
 /**
  *  @enum   DmaUtilsAutoInc3d_SyncType
  *
@@ -123,10 +122,10 @@ typedef enum{
  *
   */
 typedef enum{
-  DMAUTILSAUTOINC3D_DFMT_NONE      = 0, /*!< No formatting options */
-  DMAUTILSAUTOINC3D_DFMT_COMP      = 5, /*!< DMA will compress data into 1-D blocks */
-  DMAUTILSAUTOINC3D_DFMT_DECOMP    = 6  /*!< DMA will decompress data from 1-D blocks into decompressed structure */
-}DmaUitlsAutoInc3d_DfmtType;
+  DMAUTILSAUTOINC3D_DFMT_NONE      = 0U, /*!< No formatting options */
+  DMAUTILSAUTOINC3D_DFMT_COMP      = 5U, /*!< DMA will compress data into 1-D blocks */
+  DMAUTILSAUTOINC3D_DFMT_DECOMP    = 6U  /*!< DMA will decompress data from 1-D blocks into decompressed structure */
+}DmaUtilsAutoInc3d_DfmtType;
 
 
 /**
@@ -352,6 +351,7 @@ typedef struct
 }DmaUtilsAutoInc3d_IOPointers;
 
 
+
 /**
  *  \brief   The structure specifies the compression parameters for the transfer
  */
@@ -428,7 +428,6 @@ typedef struct
     DmaUtilsAutoInc3d_IOPointers ioPointers;
 }DmaUtilsAutoInc3d_TransferProp;
 
-
 /** ========================================================
  *
  *  \brief   This structure specifies the parameter to initialize
@@ -449,6 +448,7 @@ typedef struct
 
 typedef struct
 {
+    int32_t coreId;
     /**  DRU queue number to which a particular channel should submit its
          transfers */
     int32_t numChannels;
@@ -497,7 +497,6 @@ typedef struct
  */
 
 int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
-
 /**
  *  \brief     This function initializes the DMA UTILS context for autoincrement usecase.
  *
@@ -506,7 +505,6 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
  *
  *  \param    autoIncrementContext [IN] Memory allocated by the user as per DmaUtilsAutoInc3d_getContextSize
  *                                                      API. Try to allocate this memory in the fastest available memory for optimal performance
- *
  *
  *  \param    initParams [IN] Init params for the dmautils
  *
@@ -517,6 +515,7 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
  *
  *  =======================================================
  */
+
  int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_InitParam * initParams, DmaUtilsAutoInc3d_ChannelInitParam chInitParams[]);
 
 
@@ -598,7 +597,7 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
  *
  */
 int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
-                                            DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                            const DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
                                             uint32_t convertMask);
 
 
@@ -640,6 +639,7 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
  */
 int32_t DmaUtilsAutoInc3d_trigger(void * autoIncrementContext, int32_t channelId);
 
+
 /**
  *
  *  \brief   This function waits for completion transfer on a particular channel
@@ -654,6 +654,7 @@ int32_t DmaUtilsAutoInc3d_trigger(void * autoIncrementContext, int32_t channelId
  *
  */
 void  DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId);
+
 
 /**
  *
@@ -670,8 +671,9 @@ void  DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId);
   * \param numTr [IN] Number of Transfer Records (TR's) that will be submitted to a particular channel
  *
  *  \return \ref Udma_ErrorCodes
+ *
  */
-int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, uint8_t * trMem, int32_t numTr);
+int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, const uint8_t * trMem, int32_t numTr);
 
 /**
  *
@@ -682,6 +684,7 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
  *  \return   \ref  Udma_ErrorCodes
  *
  */
+
 int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext);
 
 int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem);
@@ -693,4 +696,3 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem);
 /* @} */
 
 #endif /*#define DMAUTILS_AUTOINCREMENT_3D_H_*/
-

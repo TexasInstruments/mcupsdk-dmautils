@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2022-2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -112,12 +112,14 @@ int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_siz
 {
     int32_t retVal = 0;
 
+    struct tisci_msg_version_req request;
+
     const Sciclient_ReqPrm_t      reqPrm =
     {
         TISCI_MSG_VERSION,
         TISCI_MSG_FLAG_AOP,
-        NULL,
-        0,
+        (uint8_t *) &request,
+        sizeof(request),
         SCICLIENT_SERVICE_WAIT_FOREVER
     };
     struct tisci_msg_version_resp response;
