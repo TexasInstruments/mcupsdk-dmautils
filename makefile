@@ -8,7 +8,7 @@ MODULE_NAME = dmautils
 SRCDIR = src
 INCDIR = . src inc
 
-ifeq ($(SOC),$(filter $(SOC), am62a))
+ifeq ($(SOC),$(filter $(SOC), am62a j722s))
 DMA_UTILS_STANDALONE:=1
 endif
 

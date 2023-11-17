@@ -45,7 +45,7 @@
 #include <drivers/hw_include/tistdtypes.h>
 #include <drivers/dmautils/csl/cslr_udmap.h>
 
-#if defined (SOC_AM62AX)
+#if defined (SOC_AM62AX) || defined (SOC_J722S)
 #include <drivers/dmautils/csl/udmap/v0/csl_udmap.h>
 #include <drivers/dmautils/csl/udmap/v0/csl_udmap_cppi5.h>
 #include <drivers/dmautils/csl/udmap/v0/csl_udmap_tr.h>

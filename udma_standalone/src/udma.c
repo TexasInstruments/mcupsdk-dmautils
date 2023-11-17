@@ -55,23 +55,20 @@
 #endif
 
 #ifdef HOST_EMULATION
-CSL_DRU_t                gHost_DRU_t;
-#define UDMA_UTC_BASE_DRU0              (&gHost_DRU_t)
+    CSL_DRU_t                gHost_DRU_t;
+    #define UDMA_UTC_BASE_DRU0              (&gHost_DRU_t)
 #else
-//:TODO:
-#if defined (SOC_J721S2) || defined (SOC_AM62A)
-#if !defined(MCU_PLUS_SDK)
-  #include <ti/csl/soc/am62a/src/cslr_soc_baseaddress.h>
-#else
-  #include <drivers/hw_include/am62ax/cslr_soc_baseaddress.h>
-#endif
-//  #define UDMA_UTC_BASE_DRU0           (CSL_C7X256V0_DRU_BASE)
-  #define UDMA_UTC_BASE_DRU0 (0x7c400000UL)
-
-#else
-  #include <ti/csl/soc/j721e/src/cslr_soc_baseaddress.h>
-  #define UDMA_UTC_BASE_DRU0           (CSL_COMPUTE_CLUSTER0_DRU_BASE)
-#endif
+    #if defined(MCU_PLUS_SDK)
+        #if defined (SOC_AM62A)
+            #include <drivers/hw_include/am62ax/cslr_soc_baseaddress.h>
+        #elif defined (SOC_J722S)
+            #include <drivers/hw_include/j722s/cslr_soc_baseaddress.h>
+        #endif
+        #define UDMA_UTC_BASE_DRU0 (0x7c400000UL)
+    #else
+        //:TODO: 
+        #define UDMA_UTC_BASE_DRU0           (CSL_COMPUTE_CLUSTER0_DRU_BASE)
+    #endif
 #endif
 
 

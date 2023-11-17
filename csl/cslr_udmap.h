@@ -37,7 +37,7 @@
 #include <drivers/hw_include/soc_config.h>
 #include <drivers/hw_include/csl.h>
 
-#if defined (SOC_AM62AX)
+#if defined (SOC_AM62AX) || defined (SOC_J722S)
 #include <drivers/dmautils/csl/udmap/v0/cslr_udmap.h>
 #endif
 
