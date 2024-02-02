@@ -64,7 +64,12 @@
         #elif defined (SOC_J722S)
             #include <drivers/hw_include/j722s/cslr_soc_baseaddress.h>
         #endif
-        #define UDMA_UTC_BASE_DRU0 (0x7c400000UL)
+        #define UDMA_UTC_BASE_DRU0 (CSL_C7X256V0_DRU_BASE)
+
+        #if defined (SOC_J722S)
+        #define UDMA_UTC_BASE_DRU1 (CSL_C7X256V1_DRU_BASE)
+        #endif
+
     #else
         //:TODO: 
         #define UDMA_UTC_BASE_DRU0           (CSL_COMPUTE_CLUSTER0_DRU_BASE)
@@ -121,6 +126,21 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
       (void) memcpy(&drvHandle->initPrms, initPrms, sizeof(Udma_InitPrms));
 
       drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
+      
+      /*setting correct DRU base adress based on Core Id */
+      /*TODO: handle this logic more cleanly*/
+
+    #ifdef SOC_J722S
+
+        #ifdef BUILD_C7X_1
+            drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
+        #endif
+
+        #ifdef BUILD_C7X_2
+            drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU1);
+        #endif
+    #endif
+      
       drvHandle->utcInfo[0].numCh   = NUM_DUM_CHNNALES;
       drvHandle->drvInitDone = UDMA_INIT_DONE;
     }

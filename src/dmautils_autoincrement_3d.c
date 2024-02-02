@@ -482,8 +482,17 @@ static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * 
   uint32_t dru_local_event_start;
   CSL_ClecEventConfig cfgClec;
 //   int32_t thisCore = (int32_t) CSL_clecGetC7xRtmapCpuId();
-
   CSL_CLEC_EVTRegs * clecBaseAddr = (CSL_CLEC_EVTRegs * ) CSL_C7X256V0_CLEC_BASE;
+
+  //for AEN we need to set seperate clec base address for seperate core
+  #ifdef SOC_J722S
+      #ifdef BUILD_C7X_1
+        clecBaseAddr = (CSL_CLEC_EVTRegs * ) CSL_C7X256V0_CLEC_BASE;
+      #endif
+      #ifdef BUILD_C7X_2
+        clecBaseAddr = (CSL_CLEC_EVTRegs * ) CSL_C7X256V1_CLEC_BASE;
+      #endif
+  #endif
 
   DmaUtilsAutoInc3d_getUtcInfo(NULL, & dru_local_event_start, coreId);
   (void)DmaUtilsAutoInc3d_getClecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext -> druChannelId, & cfgClec);
