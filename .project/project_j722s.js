@@ -22,11 +22,24 @@ const filedirs = {
     ],
 };
 
-const defines_c75 = {
+const defines_c75_0 = {
     common: [
         "MCU_PLUS_SDK",
         "MAKEFILE_BUILD",
         "BUILD_C7X_1",
+        "BUILD_C7X",
+        "UDMA_CFG_ASSERT_ENABLE",
+        "UDMA_CFG_PRINT_ENABLE",
+        "DMA_UTILS_STANDALONE ",
+        "SOC_J722S",
+    ],
+};
+
+const defines_c75_1 = {
+    common: [
+        "MCU_PLUS_SDK",
+        "MAKEFILE_BUILD",
+        "BUILD_C7X_2",
         "BUILD_C7X",
         "UDMA_CFG_ASSERT_ENABLE",
         "UDMA_CFG_PRINT_ENABLE",
@@ -61,9 +74,13 @@ function getComponentBuildProperty(buildOption) {
 
     build_property.filedirs = filedirs;
 
-    if(buildOption.cpu.match(/c75*/)) {
+    if(buildOption.cpu.match(/c75ss0-0/)) {
         build_property.files = files_c75;
-        build_property.defines = defines_c75;
+        build_property.defines = defines_c75_0;
+    }
+    if(buildOption.cpu.match(/c75ss1-0/)) {
+        build_property.files = files_c75;
+        build_property.defines = defines_c75_1;
     }
 
     return build_property;
