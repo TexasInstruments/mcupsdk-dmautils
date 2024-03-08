@@ -55,8 +55,9 @@
 #endif
 
 #ifdef HOST_EMULATION
-    CSL_DRU_t                gHost_DRU_t;
-    #define UDMA_UTC_BASE_DRU0              (&gHost_DRU_t)
+    CSL_DRU_t                gHost_DRU_t0, gHost_DRU_t1;
+    #define UDMA_UTC_BASE_DRU0              (&gHost_DRU_t0)
+    #define UDMA_UTC_BASE_DRU1              (&gHost_DRU_t1)
 #else
     #if defined(MCU_PLUS_SDK)
         #if defined (SOC_AM62A)
@@ -130,7 +131,7 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
       /*setting correct DRU base adress based on Core Id */
       /*TODO: handle this logic more cleanly*/
 
-    #ifdef SOC_J722S
+#ifdef SOC_J722S
 
         #ifdef BUILD_C7X_1
             drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
@@ -139,7 +140,18 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
         #ifdef BUILD_C7X_2
             drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU1);
         #endif
-    #endif
+
+    #ifdef HOST_EMULATION
+        if(initPrms->instId == UDMA_INST_ID_MAIN_0)
+        {
+            drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
+        }
+            if(initPrms->instId == UDMA_INST_ID_MAIN_1)
+        {
+            drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU1);
+        }
+    # endif
+#endif
       
       drvHandle->utcInfo[0].numCh   = NUM_DUM_CHNNALES;
       drvHandle->drvInitDone = UDMA_INIT_DONE;
