@@ -302,7 +302,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
                     const Udma_ChPrms *chPrms)
 {
     int32_t     retVal = UDMA_SOK, tempRetVal;
-    uint32_t    utcId = chPrms->utcId;
+    uint32_t    utcId;
     uint32_t    allocDone = (uint32_t) FALSE;
 
     /* Error check */
@@ -310,6 +310,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
     {
         retVal = UDMA_EBADARGS;
     }
+
     if(UDMA_SOK == retVal)
     {
         if(drvHandle->drvInitDone != UDMA_INIT_DONE)
@@ -345,6 +346,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
     if(UDMA_SOK == retVal)
     {
         chHandle->chInitDone        = UDMA_INIT_DONE;
+        utcId = chPrms->utcId;
         chHandle->utcInfo = &drvHandle->utcInfo[utcId];
         chHandle->pDruNrtRegs  = &chHandle->utcInfo->druRegs->CHNRT[chHandle->druChNum];
         chHandle->pDruRtRegs   = &chHandle->utcInfo->druRegs->CHRT[chHandle->druChNum];
