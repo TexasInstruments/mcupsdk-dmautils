@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2022-2023
+ *  Copyright (c) Texas Instruments Incorporated 2022-2024
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -66,6 +66,9 @@
 #include "drivers/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "drivers/dmautils/include/dmautils_autoincrement_3d.h"
 #include <drivers/hw_include/csl_clec.h>
+#if defined(SOC_AM62A)
+#include <drivers/hw_include/cslr_soc.h>
+#endif
 #endif
 
 #if defined (BUILD_C7X)
@@ -155,8 +158,12 @@ static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(const DmaUtilsAutoI
   const uintptr_t virtualAddr,int32_t chNum)
   {
     uintptr_t phyAddr = virtualAddr;
-
+    #if defined(SOC_AM62A) && defined (MCU_PLUS_SDK)
+    Udma_DrvHandleInt udmaDrvHandle = (Udma_DrvHandleInt) dmautilsContext -> initParams.udmaDrvHandle;
+    #else
     Udma_DrvHandle udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
+    #endif
+
   /* If virtual to physical address conversion function is available then use it for
   conversion else directly program the address as it is */
   if (udmaDrvHandle -> initPrms.virtToPhyFxn != NULL)
@@ -612,8 +619,11 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
                else
                {
                 channelContext -> druChannelId = Udma_chGetNum(channelHandle);
+                #if defined(SOC_AM62A) && defined (MCU_PLUS_SDK)
+                channelContext -> swTriggerPointer = Udma_chGetSwTriggerRegister(channelHandle);
+                #else
                 channelContext -> swTriggerPointer = Udma_druGetTriggerRegAddr(channelHandle);
-
+                #endif
                 eventId = DmaUtilsAutoInc3d_getEventNum(channelContext, autoIncrementContext, initParams->coreId);
                 if (eventId == (int32_t) DMAUTILS_EFAIL) {
                   retVal = (int32_t) DMAUTILS_EFAIL;
@@ -737,7 +747,11 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
   DmaUtilsAutoInc3d_Context * dmautilsContext;
   DmaUtilsAutoInc3d_ChannelContext * channelContext;
   int32_t druChannelNum;
+  #if defined(SOC_AM62A) && defined (MCU_PLUS_SDK)
+  Udma_DrvHandleInt udmaDrvHandle;
+  #else
   Udma_DrvHandle udmaDrvHandle;
+  #endif
 
   if (autoIncrementContext == NULL) {
     retVal = (int32_t) DMAUTILS_EBADARGS;
@@ -745,7 +759,12 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
 
   } else {
     dmautilsContext = (DmaUtilsAutoInc3d_Context * ) autoIncrementContext;
-    udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
+
+    #if defined(SOC_AM62A) && defined (MCU_PLUS_SDK)
+    udmaDrvHandle = (Udma_DrvHandleInt) dmautilsContext -> initParams.udmaDrvHandle;
+    #else
+    udmaDrvHandle = (Udma_DrvHandleInt) dmautilsContext -> initParams.udmaDrvHandle;
+    #endif
 
     /* Do not call the translation function if the pointer is already NULL */
     if (udmaDrvHandle -> initPrms.virtToPhyFxn != NULL)

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2022-2023
+ *  Copyright (c) Texas Instruments Incorporated 2022-2024
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -53,7 +53,12 @@
 #if !defined (MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/udma_standalone/udma.h"
 #else
+#if !defined(SOC_AM62A)
 #include "drivers/dmautils/udma_standalone/udma.h"
+#else
+#include <drivers/udma.h>
+#include <drivers/udma/udma_priv.h>
+#endif
 #endif
 #else
 #include "ti/drv/udma/udma.h"
@@ -79,8 +84,13 @@ typedef struct
   volatile uint64_t     *swTriggerPointer;
   uint64_t              waitWord;
   uint32_t              druChannelId;
+  #if defined(SOC_AM62A) && defined (MCU_PLUS_SDK)
+  Udma_ChObject     chHandle;
+  Udma_EventObject  eventHandle;
+  #else
   struct Udma_ChObj     chHandle;
   struct Udma_EventObj  eventHandle;
+  #endif
 } DmaUtilsAutoInc3d_ChannelContext;
 
 
