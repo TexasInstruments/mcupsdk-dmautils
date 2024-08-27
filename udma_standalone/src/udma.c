@@ -62,6 +62,8 @@
     #if defined(MCU_PLUS_SDK)
         #if defined (SOC_AM62A)
             #include <drivers/hw_include/am62ax/cslr_soc_baseaddress.h>
+        #elif defined (SOC_AM62DX)
+            #include <drivers/hw_include/am62dx/cslr_soc_baseaddress.h>
         #elif defined (SOC_J722S)
             #include <drivers/hw_include/j722s/cslr_soc_baseaddress.h>
         #endif

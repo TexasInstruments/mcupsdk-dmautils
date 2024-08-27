@@ -85,13 +85,13 @@
 #endif
 uint8_t L2SRAM[L2SRAM_SIZE] __attribute__((aligned(128)));
 
-#if !defined(SOC_AM62A)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
 #if !defined(HOST_EMULATION)
 /*Configure CLEC*/
 static void appC7xClecInitDru(void)
 {
     CSL_ClecEventConfig   cfgClec;
-    #if defined(SOC_AM62A)
+    #if defined(SOC_AM62A) && !defined(SOC_AM62DX)
     CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_C7X256V0_CLEC_BASE;
     #else
     CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
@@ -345,7 +345,7 @@ int32_t compareBuffers(uint8_t* buffer1, uint8_t* buffer2, int32_t width, int32_
   return fail;
 }
 
-#if !defined(SOC_AM62A)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
 int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_size)
 {
     int32_t retVal = 0;
@@ -433,7 +433,7 @@ int32_t main()
 #endif
 #else
 
-#if !defined(SOC_AM62A)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
     int32_t retVal = 0;
 
     Sciclient_ConfigPrms_t  sciClientCfg;
