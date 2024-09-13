@@ -54,7 +54,7 @@
 #include <ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h>
 #else
 #include <drivers/hw_include/cslr.h>
-#if defined(SOC_AM62A)
+#if defined(SOC_AM62A) || defined(SOC_AM62DX)
 #include <drivers/udma/include/csl_udmap_tr.h>
 #else
 #include <drivers/dmautils/csl/udmap/v0/csl_udmap_tr.h>
