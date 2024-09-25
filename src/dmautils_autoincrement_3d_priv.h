@@ -53,7 +53,7 @@
 #if !defined (MCU_PLUS_SDK)
 #include "ti/drv/udma/dmautils/udma_standalone/udma.h"
 #else
-#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+#if (!defined(SOC_AM62A) && !defined(SOC_AM62DX)) || defined(HOST_EMULATION)
 #include "drivers/dmautils/udma_standalone/udma.h"
 #else
 #include <drivers/udma.h>
@@ -84,7 +84,7 @@ typedef struct
   volatile uint64_t     *swTriggerPointer;
   uint64_t              waitWord;
   uint32_t              druChannelId;
-  #if (defined(SOC_AM62A) || defined(SOC_AM62DX)) && defined (MCU_PLUS_SDK)
+  #if (defined(SOC_AM62A) || defined(SOC_AM62DX)) && defined (MCU_PLUS_SDK) && !defined(HOST_EMULATION)
   Udma_ChObject     chHandle;
   Udma_EventObject  eventHandle;
   #else
