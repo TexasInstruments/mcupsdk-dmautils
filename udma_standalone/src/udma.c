@@ -64,12 +64,14 @@
             #include <drivers/hw_include/am62ax/cslr_soc_baseaddress.h>
         #elif defined (SOC_AM62DX)
             #include <drivers/hw_include/am62dx/cslr_soc_baseaddress.h>
+        #elif defined (SOC_AM275X)
+            #include <drivers/hw_include/am275x/cslr_soc_baseaddress.h>
         #elif defined (SOC_J722S)
             #include <drivers/hw_include/j722s/cslr_soc_baseaddress.h>
         #endif
         #define UDMA_UTC_BASE_DRU0 (CSL_C7X256V0_DRU_BASE)
 
-        #if defined (SOC_J722S)
+        #if defined(SOC_AM275X) || defined (SOC_J722S)
         #define UDMA_UTC_BASE_DRU1 (CSL_C7X256V1_DRU_BASE)
         #endif
 
@@ -117,7 +119,7 @@ void Udma_printf(Udma_DrvHandle drvHandle, const char *format, ...)
 int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
 {
     int32_t                             retVal = UDMA_SOK;
-
+    uint32_t clusterId;
     if((drvHandle == NULL_PTR) || (initPrms == NULL_PTR))
     {
       retVal = UDMA_EBADARGS;
@@ -127,9 +129,17 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
     {
       (void) memset(drvHandle, 0, sizeof(*drvHandle));
       (void) memcpy(&drvHandle->initPrms, initPrms, sizeof(Udma_InitPrms));
-
-      drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
-      
+      clusterId = CSL_clecGetC7xClusterId();
+      if(clusterId == CSL_C75_CPU_CLUSTER_NUM_C75_1)
+      {
+        drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
+      }
+    #ifdef SOC_AM275X
+      else if (clusterId == CSL_C75_CPU_CLUSTER_NUM_C75_2)
+      {
+        drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU1);
+       }
+    #endif 
       /*setting correct DRU base adress based on Core Id */
       /*TODO: handle this logic more cleanly*/
 

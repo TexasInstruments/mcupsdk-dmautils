@@ -1,32 +1,41 @@
-#
-# Auto generated makefile
-#
-
 export MCU_PLUS_SDK_PATH?=$(abspath ../../..)
 include $(MCU_PLUS_SDK_PATH)/imports.mak
 
-CG_TOOL_ROOT=$(CGT_TI_C7000_PATH)
+CG_TOOL_ROOT=$(CGT_TI_C7X_HOSTEMU_PATH)
 
-CC=$(CGT_TI_C7000_PATH)/bin/cl7x
-AR=$(CGT_TI_C7000_PATH)/bin/ar7x
+OS_VERSION := $(shell cat /etc/os-release | grep VERSION_ID= | sed -e "s|VERSION_ID=\"||" | sed -e "s|\"||")
+ifeq ($(OS_VERSION),18.04)
+	GCC_VERSION?=5
+else
+	GCC_VERSION?=11
+endif
+
+CC=$(CGT_TI_C7X_HOSTEMU_PATH)/bin/g++-$(GCC_VERSION) -c
+AR=$(CGT_TI_C7X_HOSTEMU_PATH)/bin/gcc-ar-$(GCC_VERSION)
 
 PROFILE?=release
 ConfigName:=$(PROFILE)
 
-LIBNAME:=dmautils.am62dx.c75x.ti-c7000.$(PROFILE).lib
+LIBNAME:=dmautils.am275x.c75x.ti-c7x-hostemu.$(PROFILE).lib
 
 FILES_common := \
+    udma.c \
     dmautils_autoincrement_3d.c \
     dmautils_autoincrement_3d_hostemu.c \
+    csl_dru.c \
 
 FILES_PATH_common = \
+    udma_standalone \
     src \
+    udma_standalone/src \
+    csl/dru/v0/priv \
 
 INCLUDES_common := \
-    -I${CG_TOOL_ROOT}/include \
+    -I${CGT_TI_C7000_PATH}/host_emulation/include/C7504 \
     -I${MCU_PLUS_SDK_PATH}/source \
 
 DEFINES_common := \
+    -DSOC_AM275X \
     -DMCU_PLUS_SDK \
     -DMAKEFILE_BUILD \
     -DBUILD_C7X_1 \
@@ -34,43 +43,27 @@ DEFINES_common := \
     -DUDMA_CFG_ASSERT_ENABLE \
     -DUDMA_CFG_PRINT_ENABLE \
     -DDMA_UTILS_STANDALONE  \
-    -DSOC_AM62DX \
     -DSW_VERSION=$(SW_VERSION)
 
 CFLAGS_common := \
-    -mv7504 \
-    --abi=eabi \
-    -q \
-    -mo \
-    -pden \
-    -pds=238 \
-    -pds=880 \
-    -pds1110 \
-    --endian=little \
-    --disable_inlining \
-    -ea.se71 \
-    --emit_warnings_as_errors \
-    --diag_suppress=770 \
-    --diag_suppress=69 \
-    --diag_suppress=70 \
+    -std=c++14 \
+    -DHOST_EMULATION \
+    -w \
+    -D_HOST_BUILD \
+    -DGCC_BUILD \
+    -DCORE_DSP \
+    -fPIC \
 
 CFLAGS_debug := \
-    -Dxdc_target_name__=C71 \
-    -D_DEBUG_=1 \
-    --opt_level=0 \
-    --symdebug:dwarf \
-    -DBUILD_C7X_1 \
-    -DBUILD_C7X \
+    -ggdb \
+    -ggdb3 \
+    -gdwarf-2 \
 
 CFLAGS_release := \
-    -Dxdc_target_name__=C71 \
-    --opt_level=3 \
-    --symdebug:none \
-    -DBUILD_C7X_1 \
-    -DBUILD_C7X \
+    -O3 \
 
 ARFLAGS_common := \
-    rq \
+    rcs \
 
 FILES := $(FILES_common) $(FILES_$(PROFILE))
 ASMFILES := $(ASMFILES_common) $(ASMFILES_$(PROFILE))
@@ -85,7 +78,7 @@ INCLUDES := $(INCLUDES_common) $(INCLUDE_$(PROFILE))
 ARFLAGS := $(ARFLAGS_common) $(ARFLAGS_$(PROFILE))
 
 LIBDIR := lib
-OBJDIR := obj/am62dx/ti-c7000/$(PROFILE)/c75x/dmautils/
+OBJDIR := obj/am275x/ti-c7x-hostemu/$(PROFILE)/c75x/dmautils/
 OBJS := $(FILES:%.c=%.obj)
 OBJS += $(ASMFILES:%.S=%.obj)
 DEPS := $(FILES:%.c=%.d)
@@ -96,11 +89,10 @@ vpath %.S $(FILES_PATH)
 
 $(OBJDIR)/%.obj %.obj: %.c
 	@echo  Compiling: $(LIBNAME): $<
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) -ppd=$(OBJDIR)/$(basename $@).d -ppa -fr=$(OBJDIR)/ -fc=$<
+	$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) -o $(OBJDIR)/$@ $<
 
 $(OBJDIR)/%.obj %.obj: %.S
 	@echo  Compiling: $(LIBNAME): $<
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) -ppd=$(OBJDIR)/$(basename $@).d -ppa -fr=$(OBJDIR)/ -fa=$<
 
 all: $(LIBDIR)/$(LIBNAME)
 

@@ -36,6 +36,7 @@ DEFINES_common := \
     -DUDMA_CFG_PRINT_ENABLE \
     -DDMA_UTILS_STANDALONE  \
     -DSOC_AM62A \
+    -DSW_VERSION=$(SW_VERSION)
 
 CFLAGS_common := \
     -mv7504 \

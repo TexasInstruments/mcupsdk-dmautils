@@ -45,7 +45,7 @@
 #include <drivers/hw_include/tistdtypes.h>
 #include <drivers/dmautils/csl/cslr_dru.h>
 
-#if defined (SOC_AM62AX) || (SOC_AM62DX) ||defined (SOC_J722S)
+#if defined (SOC_AM62AX) || (SOC_AM62DX) || defined (SOC_AM275X) || defined (SOC_J722S) 
 #include <drivers/dmautils/csl/dru/v0/csl_dru.h>
 #endif
 

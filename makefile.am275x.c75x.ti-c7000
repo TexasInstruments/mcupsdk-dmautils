@@ -13,7 +13,7 @@ AR=$(CGT_TI_C7000_PATH)/bin/ar7x
 PROFILE?=release
 ConfigName:=$(PROFILE)
 
-LIBNAME:=dmautils.am62dx.c75x.ti-c7000.$(PROFILE).lib
+LIBNAME:=dmautils.am275x.c75x.ti-c7000.$(PROFILE).lib
 
 FILES_common := \
     dmautils_autoincrement_3d.c \
@@ -27,6 +27,7 @@ INCLUDES_common := \
     -I${MCU_PLUS_SDK_PATH}/source \
 
 DEFINES_common := \
+    -DSOC_AM275X \
     -DMCU_PLUS_SDK \
     -DMAKEFILE_BUILD \
     -DBUILD_C7X_1 \
@@ -34,11 +35,10 @@ DEFINES_common := \
     -DUDMA_CFG_ASSERT_ENABLE \
     -DUDMA_CFG_PRINT_ENABLE \
     -DDMA_UTILS_STANDALONE  \
-    -DSOC_AM62DX \
     -DSW_VERSION=$(SW_VERSION)
 
 CFLAGS_common := \
-    -mv7504 \
+    -mv7524 \
     --abi=eabi \
     -q \
     -mo \
@@ -85,7 +85,7 @@ INCLUDES := $(INCLUDES_common) $(INCLUDE_$(PROFILE))
 ARFLAGS := $(ARFLAGS_common) $(ARFLAGS_$(PROFILE))
 
 LIBDIR := lib
-OBJDIR := obj/am62dx/ti-c7000/$(PROFILE)/c75x/dmautils/
+OBJDIR := obj/am275x/ti-c7000/$(PROFILE)/c75x/dmautils/
 OBJS := $(FILES:%.c=%.obj)
 OBJS += $(ASMFILES:%.S=%.obj)
 DEPS := $(FILES:%.c=%.d)

@@ -100,7 +100,7 @@ dmautilsAutoIncTest_config gTestConfig[] =
         8,/*Image blockWidth */
         8/*Image blockHeight */
     },
-    #if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+    #if !defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
     {
           1,
           1,
@@ -130,7 +130,7 @@ dmautilsAutoIncTest_config gTestConfig[] =
 };
 
 
-#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
 int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_size)
 {
     int32_t retVal = 0;
@@ -187,14 +187,14 @@ int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_siz
 }
 #endif
 
-#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
 #if !defined(HOST_EMULATION)
 /*Configure CLEC*/
 static void appC7xClecInitDru(void)
 {
     printf("Inside appC7xClecInitDru \n");
     CSL_ClecEventConfig   cfgClec;
-    #if defined(SOC_AM62A) && !defined(SOC_AM62DX)
+    #if defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
     CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_C7X256V0_CLEC_BASE;
     #else
     CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
@@ -260,7 +260,7 @@ int32_t main()
 #endif
 #else
 
-#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
     int32_t retVal = 0;
     Sciclient_ConfigPrms_t  sciClientCfg;
     Sciclient_configPrmsInit(&sciClientCfg);

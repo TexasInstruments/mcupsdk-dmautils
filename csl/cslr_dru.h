@@ -36,7 +36,7 @@
 #include <drivers/hw_include/csl.h>
 #include <drivers/hw_include/tistdtypes.h>
 
-#if defined (SOC_AM62AX) || (SOC_AM62DX) || defined (SOC_J722S)
+#if defined (SOC_AM62AX) || (SOC_AM62DX) || defined (SOC_AM275X) || defined (SOC_J722S) 
 #include <drivers/dmautils/csl/dru/v0/cslr_dru.h>
 #endif
 

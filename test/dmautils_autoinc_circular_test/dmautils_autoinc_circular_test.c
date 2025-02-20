@@ -107,7 +107,7 @@ dmautilsAutoIncTest_config gTestConfig[] =
 
 };
 
-#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
 int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_size)
 {
     int32_t retVal = 0;
@@ -165,7 +165,7 @@ int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_siz
 }
 #endif
 
-#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
 #if !defined(HOST_EMULATION)
 /*Configure CLEC*/
 static void appC7xClecInitDru(void)
@@ -237,7 +237,7 @@ int32_t main()
 #endif
 #else
 
-#if !defined(SOC_AM62A) && !defined(SOC_AM62DX)
+#if !defined(SOC_AM62A) && !defined(SOC_AM62DX) && !defined(SOC_AM275X)
     int32_t retVal = 0;
 
     Sciclient_ConfigPrms_t  sciClientCfg;
