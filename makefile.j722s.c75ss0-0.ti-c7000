@@ -16,16 +16,11 @@ ConfigName:=$(PROFILE)
 LIBNAME:=dmautils.j722s.c75ss0-0.ti-c7000.$(PROFILE).lib
 
 FILES_common := \
-    udma.c \
     dmautils_autoincrement_3d.c \
     dmautils_autoincrement_3d_hostemu.c \
-    csl_dru.c \
 
 FILES_PATH_common = \
-    udma_standalone \
     src \
-    udma_standalone/src \
-    csl/dru/v0/priv \
 
 INCLUDES_common := \
     -I${CG_TOOL_ROOT}/include \

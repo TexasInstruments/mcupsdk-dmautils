@@ -66,7 +66,7 @@
 #include "drivers/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "drivers/dmautils/include/dmautils_autoincrement_3d.h"
 #include <drivers/hw_include/csl_clec.h>
-#if (defined(SOC_AM62A) || defined(SOC_AM62DX) || defined(SOC_AM275X)) && !defined(HOST_EMULATION)
+#if !defined(HOST_EMULATION)
 #include <drivers/hw_include/cslr_soc.h>
 #endif
 #endif
@@ -158,7 +158,7 @@ static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(const DmaUtilsAutoI
   const uintptr_t virtualAddr,int32_t chNum)
   {
     uintptr_t phyAddr = virtualAddr;
-    #if (defined(SOC_AM62A) || defined(SOC_AM62DX) || defined(SOC_AM275X)) && defined (MCU_PLUS_SDK) &&!defined(HOST_EMULATION)
+    #if defined (MCU_PLUS_SDK) &&!defined(HOST_EMULATION)
     Udma_DrvHandleInt udmaDrvHandle = (Udma_DrvHandleInt) dmautilsContext -> initParams.udmaDrvHandle;
     #else
     Udma_DrvHandle udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
@@ -630,7 +630,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
                else
                {
                 channelContext -> druChannelId = Udma_chGetNum(channelHandle);
-                #if (defined(SOC_AM62A) || defined(SOC_AM62DX) || defined(SOC_AM275X)) && defined (MCU_PLUS_SDK) && !defined(HOST_EMULATION)
+                #if defined (MCU_PLUS_SDK) && !defined(HOST_EMULATION)
                 channelContext -> swTriggerPointer = Udma_chGetSwTriggerRegister(channelHandle);
                 #else
                 channelContext -> swTriggerPointer = Udma_druGetTriggerRegAddr(channelHandle);
@@ -758,7 +758,7 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
   DmaUtilsAutoInc3d_Context * dmautilsContext;
   DmaUtilsAutoInc3d_ChannelContext * channelContext;
   int32_t druChannelNum;
-  #if (defined(SOC_AM62A) || defined(SOC_AM62DX) || defined(SOC_AM275X)) && defined (MCU_PLUS_SDK) && !defined(HOST_EMULATION)
+  #if defined (MCU_PLUS_SDK) && !defined(HOST_EMULATION)
   Udma_DrvHandleInt udmaDrvHandle;
   #else
   Udma_DrvHandle udmaDrvHandle;
@@ -771,7 +771,7 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
   } else {
     dmautilsContext = (DmaUtilsAutoInc3d_Context * ) autoIncrementContext;
 
-    #if (defined(SOC_AM62A) || defined(SOC_AM62DX) || defined(SOC_AM275X)) && defined (MCU_PLUS_SDK) && !defined(HOST_EMULATION)
+    #if defined (MCU_PLUS_SDK) && !defined(HOST_EMULATION)
     udmaDrvHandle = (Udma_DrvHandleInt) dmautilsContext -> initParams.udmaDrvHandle;
     #else
     udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;

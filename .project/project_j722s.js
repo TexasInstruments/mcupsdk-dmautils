@@ -6,19 +6,14 @@ let device = "j722s";
 
 const files_c75 = {
     common: [
-        "udma.c",
         "dmautils_autoincrement_3d.c",
         "dmautils_autoincrement_3d_hostemu.c",
-        "csl_dru.c"
     ],
 };
 
 const filedirs = {
     common: [
-        "udma_standalone",
         "src",
-        "udma_standalone/src",
-        "csl/dru/v0/priv",
     ],
 };
 
