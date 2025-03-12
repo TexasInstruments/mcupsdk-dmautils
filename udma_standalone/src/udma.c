@@ -119,7 +119,6 @@ void Udma_printf(Udma_DrvHandle drvHandle, const char *format, ...)
 int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
 {
     int32_t                             retVal = UDMA_SOK;
-    uint32_t clusterId;
     if((drvHandle == NULL_PTR) || (initPrms == NULL_PTR))
     {
       retVal = UDMA_EBADARGS;
@@ -129,6 +128,8 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
     {
       (void) memset(drvHandle, 0, sizeof(*drvHandle));
       (void) memcpy(&drvHandle->initPrms, initPrms, sizeof(Udma_InitPrms));
+#ifndef HOST_EMULATION
+      uint32_t clusterId;
       clusterId = CSL_clecGetC7xClusterId();
       if(clusterId == CSL_C75_CPU_CLUSTER_NUM_C75_1)
       {
@@ -140,6 +141,9 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
         drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU1);
        }
     #endif 
+#else
+    drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
+#endif
       /*setting correct DRU base adress based on Core Id */
       /*TODO: handle this logic more cleanly*/
 
